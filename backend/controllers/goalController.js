@@ -1,4 +1,5 @@
 const Goal = require("../models/goalModel")
+const mongoose = require("mongoose");
 
 
 const getGoals = (req, res) => {
@@ -27,6 +28,9 @@ const createGoal = async (req, res) => {
 
   const updateGoal = async (req, res) => {
     try {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ error: "Invalid goal id."});
+      }
       const goal = await Goal.findById(req.params.id);
 
       if(!goal) {
@@ -45,6 +49,9 @@ const createGoal = async (req, res) => {
   const deleteGoal = async (req,res) => {
     
     try {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ error: "Invalid goal id." });
+      }
       const goal = await Goal.findById(req.params.id);
       if (!goal) {
         return res.status(404).json({error: "Goal not found"});
