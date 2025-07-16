@@ -24,10 +24,28 @@ const createGoal = async (req, res) => {
   }
   
   };
+
+  const updateGoal = async (req, res) => {
+    try {
+      const goal = await Goal.findById(req.params.id);
+
+      if(!goal) {
+        return res.status(404).json({"error": "Goal not found."});
+      };
+
+      const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {new: true});
+
+      res.status(200).json(updatedGoal);
+    } catch (error) {
+      console.error(`Error in updating goal with id: ${req.params.id}, ${error.message}`);
+      res.status(500).json({"error": "Server error."})
+    }
+  }
   
 
 
 module.exports = {
   getGoals,
   createGoal,
+  updateGoal
 };
