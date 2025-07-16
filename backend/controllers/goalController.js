@@ -40,12 +40,35 @@ const createGoal = async (req, res) => {
       console.error(`Error in updating goal with id: ${req.params.id}, ${error.message}`);
       res.status(500).json({"error": "Server error."})
     }
-  }
-  
+  };
+
+  const deleteGoal = async (req,res) => {
+    
+    try {
+      const goal = await Goal.findById(req.params.id);
+      if (!goal) {
+        return res.status(404).json({error: "Goal not found"});
+      };
+
+      const deletedGoal = await goal.deleteOne();
+
+      res
+        .status(200)
+        .json({
+          message: `Goal with id ${req.params.id} deleted successfully`});
+
+    } catch (error) {
+
+      console.error("Error in deleting goal: ", error.message);
+      res.status(500).json({error: "server error"});
+
+    };
+  }  
 
 
 module.exports = {
   getGoals,
   createGoal,
-  updateGoal
+  updateGoal,
+  deleteGoal
 };
