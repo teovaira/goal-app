@@ -21,7 +21,7 @@ const createGoal = async (req, res) => {
 
   } catch (error) {
       console.error("Error in creating goal: ", error.message);
-    res.status(500).json({error: "Server error"});
+    return res.status(500).json({error: "Server error"});
   }
   
   };
@@ -42,7 +42,7 @@ const createGoal = async (req, res) => {
       res.status(200).json(updatedGoal);
     } catch (error) {
       console.error(`Error in updating goal with id: ${req.params.id}, ${error.message}`);
-      res.status(500).json({"error": "Server error."})
+      return res.status(500).json({"error": "Server error."})
     }
   };
 
@@ -67,7 +67,7 @@ const createGoal = async (req, res) => {
     } catch (error) {
 
       console.error("Error in deleting goal: ", error.message);
-      res.status(500).json({error: "server error"});
+      return res.status(500).json({ error: "server error" });
 
     };
   }  
