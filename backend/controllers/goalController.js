@@ -47,25 +47,30 @@ const createGoal = asyncHandler(async (req,res) => {
 
 
 
-  const updateGoal = async (req, res) => {
-    try {
+  const updateGoal = asyncHandler(async (req, res) => {
+    
       if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({ error: "Invalid goal id."});
       }
       const goal = await Goal.findById(req.params.id);
 
       if(!goal) {
+        console.log("Goal not found.");
         return res.status(404).json({"error": "Goal not found."});
       };
+
+      if (!req.body || !req.body.text) {
+        console.log("Missing request body or text field.");
+        return res.status(400).json({error: "Please include a valid text field."});
+      }
 
       const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {new: true});
 
       res.status(200).json(updatedGoal);
-    } catch (error) {
-      console.error(`Error in updating goal with id: ${req.params.id}, ${error.message}`);
-      return res.status(500).json({"error": "Server error."})
-    }
-  };
+    
+      
+    
+  });
 
   const deleteGoal = async (req,res) => {
     
