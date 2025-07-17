@@ -4,15 +4,19 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 
 const registerUser = asyncHandler(async (req, res) => {
+  if (!req.body) {
+    res.status(400);
+    throw new Error("Request body is empty");
+  }
+  
+  const { name, password, email } = req.body;
 
-  const { name, password, email} = req.body;
-
-  if (!name || !password ||!email) {
+  if (!name || !password || !email) {
     res.status(400);
     throw new Error("Please add all fields.");
-  };
+  }
 
-  const userExists = await User.findOne({email});
+  const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
     throw new Error("User already exists.");
@@ -24,20 +28,19 @@ const registerUser = asyncHandler(async (req, res) => {
   const newUser = await User.create({
     name,
     email,
-    password: hashedPassword
+    password: hashedPassword,
   });
 
   if (newUser) {
     res.status(201).json({
       _id: newUser.id,
       name: newUser.name,
-      email: newUser.email
+      email: newUser.email,
     });
   } else {
     res.status(400);
-    throw new Error("Invalid user data")
-  };
-
+    throw new Error("Invalid user data");
+  }
 });
 
 module.exports = registerUser;
