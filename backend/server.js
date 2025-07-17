@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const connectToMongoDB = require("./config/db.js")
 const app = express();
+const errorHandler = require("./middlewares/errorMiddleware")
 const PORT = process.env.PORT;
 
 app.use(express.json());

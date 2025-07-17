@@ -1,30 +1,51 @@
 const Goal = require("../models/goalModel")
 const mongoose = require("mongoose");
+const asyncHandler = require("express-async-handler");
 
 
-const getGoals = (req, res) => {
-  res.status(200).json({ message: "Get goals" });
+const getGoals = asyncHandler( async (req, res) => {
+  console.log("GET request received at /api/goals.");
+
+  const goals = await Goal.find();
+  res.status(200).json(goals);
   console.log("hit /api/goals");
-};
+});
 
-const createGoal = async (req, res) => {
-  try {
-      console.log("Body received: ", req.body);
-    if (!req.body || !req.body.text) {
-      return res.status(400).json({error: "Please add a text field."});
-    };
+// const createGoal = (req, res) => {
+//   try {
+//       console.log("Body received: ", req.body);
+//     if (!req.body || !req.body.text) {
+//       return res.status(400).json({error: "Please add a text field."});
+//     };
 
-      const goal = await Goal.create({
-      text: req.body.text,
-    });
-    res.status(201).json(goal);  
+//       const goal = await Goal.create({
+//       text: req.body.text,
+//     });
+//     res.status(201).json(goal);  
 
-  } catch (error) {
-      console.error("Error in creating goal: ", error.message);
-    return res.status(500).json({error: "Server error"});
-  }
+//   } catch (error) {
+//       console.error("Error in creating goal: ", error.message);
+//     return res.status(500).json({error: "Server error"});
+//   }
   
-  };
+//   };
+
+const createGoal = asyncHandler(async (req,res) => {
+  console.log("Body received: ", req.body);
+
+  if (!req.body.text) {
+    res.status(400);
+    throw new error("Please add a text field.");
+  }
+
+  const goal = await Goal.create({
+    text: req.body.text
+  });
+
+  res.status(201).json(goal);
+});
+
+
 
   const updateGoal = async (req, res) => {
     try {
