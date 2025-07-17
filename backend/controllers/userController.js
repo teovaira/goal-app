@@ -1,10 +1,16 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+const asyncHandler = require("express-async-handler");
 
-const registerUser = async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
 
   const { name, password, email} = req.body;
+
+  if (!name || !password ||!email) {
+    res.status(400);
+    throw new Error("Please add all fields.");
+  };
 
   const userExists = await User.findOne({email});
   if (userExists) {
@@ -32,6 +38,6 @@ const registerUser = async (req, res) => {
     throw new Error("Invalid user data")
   };
 
-};
+});
 
 module.exports = registerUser;
