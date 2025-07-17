@@ -1,19 +1,7 @@
 require("dotenv").config();
-
-const express = require("express");
 const connectToMongoDB = require("./config/db.js")
-const app = express();
-const errorHandler = require("./middlewares/errorMiddleware")
+const app = require("./app");
 const PORT = process.env.PORT;
-
-app.use(express.json());
-
-app.use("/api/goals", require("./routes/goalRoutes"));
-
-
-app.get("/", (req, res) => {
-  res.send("Welcome to GoalApp API");
-});
 
 const startServer = async () => {
   try {
