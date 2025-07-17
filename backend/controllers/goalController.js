@@ -67,7 +67,9 @@ const createGoal = asyncHandler(async (req,res) => {
         throw new Error("Please add a text field.")
       };
 
-      const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {new: true});
+      const updatedGoal = await Goal.findByIdAndUpdate(req.params.id,
+       {text: req.body.text},
+       {new: true});
 
       res.status(200).json(updatedGoal);
     
