@@ -33,7 +33,7 @@ const getGoals = asyncHandler( async (req, res) => {
 const createGoal = asyncHandler(async (req,res) => {
   console.log("Body received: ", req.body);
 
-  if (!req.body.text) {
+  if (!req.body || !req.body.text) {
     res.status(400);
     throw new error("Please add a text field.");
   }
