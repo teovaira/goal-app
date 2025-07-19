@@ -3,9 +3,15 @@ const router = express.Router();
 
 const { getGoals, createGoal, updateGoal, deleteGoal } = require("../controllers/goalController");
 
-router.get("/", getGoals);
-router.post("/", createGoal);
-router.put("/:id", updateGoal);
-router.delete("/:id", deleteGoal);
+const verifyToken = require("../middlewares/authMiddleware");
+
+router.route("/")
+  .get(verifyToken, getGoals)
+  .post(verifyToken, createGoal);
+
+router
+  .route("/:id")
+    .put(verifyToken, updateGoal)
+    .delete(verifyToken, deleteGoal);
 
 module.exports = router;
