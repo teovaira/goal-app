@@ -96,6 +96,11 @@ const createGoal = asyncHandler(async (req,res) => {
         throw new Error("Goal not found.");
       };
 
+      if (goal.user.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("Not authorized to delete this goal");
+      }
+
       const deletedGoal = await goal.deleteOne();
 
       res.status(200).json(
