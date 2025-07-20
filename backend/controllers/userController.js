@@ -37,6 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: newUser.id,
       name: newUser.name,
       email: newUser.email,
+      token: generateToken(newUser._id)
     });
   } else {
     res.status(400);
@@ -76,8 +77,13 @@ const loginUser = asyncHandler( async (req, res) => {
 
 });
 
+const getMe = asyncHandler( async (req, res) => {
+  res.status(200).json(req.user);
+});
+
 
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  getMe
 };
