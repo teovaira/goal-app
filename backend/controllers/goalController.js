@@ -6,7 +6,7 @@ const asyncHandler = require("express-async-handler");
 const getGoals = asyncHandler( async (req, res) => {
   console.log("GET request received at /api/goals.");
 
-  const goals = await Goal.find();
+  const goals = await Goal.find({user: req.user.id});
   res.status(200).json(goals);
   console.log("hit /api/goals");
 });
@@ -66,6 +66,11 @@ const createGoal = asyncHandler(async (req,res) => {
         console.log("Missing request body or text field.");
         res.status(400);
         throw new Error("Please add a text field.")
+      };
+
+      if (goal.user.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("Not authorized to update this goal");
       };
 
       const updatedGoal = await Goal.findByIdAndUpdate(req.params.id,
