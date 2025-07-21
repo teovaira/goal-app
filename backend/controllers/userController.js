@@ -79,6 +79,11 @@ const loginUser = asyncHandler( async (req, res) => {
 
 const getMe = asyncHandler( async (req, res) => {
   res.status(200).json(req.user);
+
+  if (!req.user) {
+  res.status(404);
+  throw new Error("User not found");
+  }
 });
 
 
