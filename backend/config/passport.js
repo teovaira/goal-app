@@ -16,13 +16,15 @@ passport.use(
         return done(null, existingUser);
       }
 
-      const newUser = await User.create({
+      const newUser =await User.create({
         name: profile.displayName,
         email: profile.emails[0].value,
         googleID: profile.id,
       });
 
-      return done(null.newUser);
+      
+
+      return done(null, newUser);
     }
   )
 );

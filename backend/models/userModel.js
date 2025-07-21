@@ -8,13 +8,14 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please insert a password"],
+      required: [true, "Password is required"]
     },
     email: {
       type: String,
       required: [true, "Please insert an email"],
       unique: true,
-    },
+    }
+    
   },
   {
     timestamps: true,
