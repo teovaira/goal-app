@@ -83,15 +83,19 @@ router.post("/login", loginUser);
  * @swagger
  * /api/users/me:
  *   get:
- *     summary: Get current logged-in user's profile
+ *     summary: Get current logged-in user
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User profile returned
+ *         description: The logged-in user's profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       401:
- *         description: Unauthorized or token missing/invalid
+ *         description: Unauthorized - missing or invalid token
  */
 
 router.get("/me", verifyToken, getMe);

@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
  *       properties:
  *         _id:
  *           type: string
- *           description: The mongodb auto-generated id of the user
+ *           description: The MongoDB auto-generated ID of the user
  *         name:
  *           type: string
  *           description: The name of the user
@@ -24,7 +24,6 @@ const mongoose = require("mongoose");
  *           type: string
  *           format: email
  *           description: The email of the user
- *         
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -32,13 +31,14 @@ const mongoose = require("mongoose");
  *           type: string
  *           format: date-time
  *       example:
- *          _id: 60f7c0d8b123456789abcdef
- *          name: Teo
- *          password: $2a$10$abc123hashedpassword
- *          email: teo@example.com
- *         createdAt: 2025-07-22T10:00:00.000Z
- *         updatedAt: 2025-07-22T10:00:00.000Z
+ *         _id: "60f7c0d8b123456789abcdef"
+ *         name: "Teo"
+ *         password: "$2a$10$abc123hashedpassword"
+ *         email: "teo@example.com"
+ *         createdAt: "2025-07-22T10:00:00.000Z"
+ *         updatedAt: "2025-07-22T10:00:00.000Z"
  */
+
 
 
 const userSchema = new mongoose.Schema(
