@@ -2,6 +2,8 @@ const passport = require("passport");
 require("./config/passport");
 const express = require("express");
 const app = express();
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./docs/swagger");
 const errorHandler = require("./middlewares/errorMiddleware");
 const notFound = require("./middlewares/notFoundRouteMiddleware");
 const goalRoutes = require("./routes/goalRoutes");
@@ -10,6 +12,7 @@ const authRoutes = require("./routes/authRoutes");
 
 app.use(express.json());
 app.use(passport.initialize());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.send("Welcome to GoalApp API");
