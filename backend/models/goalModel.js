@@ -5,6 +5,7 @@
  *     Goal:
  *       type: object
  *       required:
+ *         - user
  *         - text
  *       properties:
  *         _id:
