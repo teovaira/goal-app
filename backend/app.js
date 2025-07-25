@@ -2,6 +2,7 @@ const passport = require("passport");
 require("./config/passport");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./docs/swagger");
 const errorHandler = require("./middlewares/errorMiddleware");
@@ -11,6 +12,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 
 app.use(express.json());
+app.use(cors());
 app.use(passport.initialize());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
