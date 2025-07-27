@@ -1,7 +1,7 @@
 const Goal = require("../models/goalModel")
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
-const logger = require("./config/logger");
+const logger = require("../config/logger");
 
 
 const getGoals = asyncHandler( async (req, res) => {
@@ -123,9 +123,11 @@ const createGoal = asyncHandler(async (req,res) => {
 
       logger.info(`Goal with id: ${req.params.id} deleted by user ${req.user.id}`);
 
-      res.status(200).json(
-        "Goal successfully deleted.", deletedGoal
-      );
+      res.status(200).json({
+        message: "Goal successfully deleted.", 
+        goal: deletedGoal
+      });
+    
 
     
   });
