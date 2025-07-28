@@ -1,11 +1,13 @@
+const jwt = require("jsonwebtoken");
 const logger = require("../config/logger");
 
-const notFound = (req, res, next) => {
-  const errorMessage = `Route: ${req.originalUrl} not found `;
-  logger.warn(errorMessage);
-  const error = new Error(errorMessage);
-  res.status(404);
-  next(error);
+const generateToken = (userId) => {
+  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: "2h",
+  });
+
+  logger.debug(`Generated token for user ${userId}`);
+  return token;
 };
 
-module.exports = notFound;
+module.exports = generateToken;
