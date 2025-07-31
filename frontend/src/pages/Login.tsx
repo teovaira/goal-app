@@ -12,9 +12,11 @@ const Login = () => {
 
     setError({ email: "", password: "" });
 
+    let hasError = false; 
+
     if (!email) {
       setError((prev) => ({ ...prev, email: "Email is required." }));
-      return;
+      hasError = true;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -23,12 +25,12 @@ const Login = () => {
         ...prev,
         email: "Please enter a valid email address.",
       }));
-      return;
+      hasError = true;
     }
 
     if (!password) {
       setError((prev) => ({ ...prev, password: "Password is required." }));
-      return;
+      hasError = true;
     }
 
     const passwordRegex =
@@ -39,6 +41,10 @@ const Login = () => {
         password:
           "Password must be at least 8 characters long, contain 1 uppercase letter, 1 number, and 1 special character.",
       }));
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
 
