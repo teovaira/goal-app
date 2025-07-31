@@ -1,19 +1,30 @@
 import { useState } from "react";
 
 const Login = () => {
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); 
 
-  
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     
+    if (!email || !password) {
+      setError("Both fields are required.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setError("");
     console.log("Email:", email);
     console.log("Password:", password);
 
-    
     setEmail("");
     setPassword("");
   };
@@ -24,7 +35,8 @@ const Login = () => {
         <h2 className="text-3xl font-semibold">Login Page</h2>
         <p className="mt-4 mb-6">Enter your credentials to login.</p>
 
-        
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
