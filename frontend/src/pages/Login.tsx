@@ -1,17 +1,17 @@
 import { useState } from "react";
+import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid"; 
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState({ email: "", password: "" }); 
+  const [error, setError] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    
     setError({ email: "", password: "" });
 
-    
     if (!email) {
       setError((prev) => ({ ...prev, email: "Email is required." }));
       return;
@@ -26,7 +26,6 @@ const Login = () => {
       return;
     }
 
-    
     if (!password) {
       setError((prev) => ({ ...prev, password: "Password is required." }));
       return;
@@ -43,7 +42,6 @@ const Login = () => {
       return;
     }
 
-    
     setError({ email: "", password: "" });
     console.log("Email:", email);
     console.log("Password:", password);
@@ -77,10 +75,9 @@ const Login = () => {
             />
             {error.email && (
               <p className="text-red-500 text-sm">{error.email}</p>
-            )}{" "}
+            )}
           </div>
 
-   
           <div>
             <label
               htmlFor="password"
@@ -88,18 +85,31 @@ const Login = () => {
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Your password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"} 
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)} 
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <EyeOffIcon className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <EyeIcon className="h-5 w-5 text-gray-500" />
+                )}
+              </button>
+            </div>
             {error.password && (
               <p className="text-red-500 text-sm">{error.password}</p>
-            )}{" "}
+            )}
           </div>
 
           <button
