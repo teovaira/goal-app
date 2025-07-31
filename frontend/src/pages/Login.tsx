@@ -1,11 +1,31 @@
+import { useState } from "react";
+
 const Login = () => {
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); 
+
+    
+    console.log("Email:", email);
+    console.log("Password:", password);
+
+    
+    setEmail("");
+    setPassword("");
+  };
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-200">
       <div className="text-center p-6 bg-white rounded-lg shadow-lg max-w-lg w-full">
         <h2 className="text-3xl font-semibold">Login Page</h2>
         <p className="mt-4 mb-6">Enter your credentials to login.</p>
 
-        <form className="space-y-4">
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="email"
@@ -17,6 +37,8 @@ const Login = () => {
               type="email"
               id="email"
               name="email"
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your email"
             />
@@ -33,6 +55,8 @@ const Login = () => {
               type="password"
               id="password"
               name="password"
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your password"
             />
