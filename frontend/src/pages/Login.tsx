@@ -13,13 +13,22 @@ const Login = () => {
     if (!email || !password) {
       setError("Both fields are required.");
       return;
-    }
+    };
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address.");
       return;
-    }
+    };
+
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password must be at least 8 characters long, contain 1 uppercase letter, 1 number, and 1 special character."
+      );
+      return;
+    };
 
     setError("");
     console.log("Email:", email);
