@@ -1,36 +1,50 @@
 import { useState } from "react";
 
 const Login = () => {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState({ email: "", password: "" }); 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     
-    if (!email || !password) {
-      setError("Both fields are required.");
+    setError({ email: "", password: "" });
+
+    
+    if (!email) {
+      setError((prev) => ({ ...prev, email: "Email is required." }));
       return;
-    };
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
+      setError((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address.",
+      }));
       return;
-    };
+    }
+
+    
+    if (!password) {
+      setError((prev) => ({ ...prev, password: "Password is required." }));
+      return;
+    }
 
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
-      setError(
-        "Password must be at least 8 characters long, contain 1 uppercase letter, 1 number, and 1 special character."
-      );
+      setError((prev) => ({
+        ...prev,
+        password:
+          "Password must be at least 8 characters long, contain 1 uppercase letter, 1 number, and 1 special character.",
+      }));
       return;
-    };
+    }
 
-    setError("");
+    
+    setError({ email: "", password: "" });
     console.log("Email:", email);
     console.log("Password:", password);
 
@@ -44,8 +58,6 @@ const Login = () => {
         <h2 className="text-3xl font-semibold">Login Page</h2>
         <p className="mt-4 mb-6">Enter your credentials to login.</p>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
@@ -58,13 +70,17 @@ const Login = () => {
               type="email"
               id="email"
               name="email"
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your email"
             />
+            {error.email && (
+              <p className="text-red-500 text-sm">{error.email}</p>
+            )}{" "}
           </div>
 
+   
           <div>
             <label
               htmlFor="password"
@@ -76,11 +92,14 @@ const Login = () => {
               type="password"
               id="password"
               name="password"
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your password"
             />
+            {error.password && (
+              <p className="text-red-500 text-sm">{error.password}</p>
+            )}{" "}
           </div>
 
           <button
