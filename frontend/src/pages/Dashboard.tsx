@@ -1,3 +1,5 @@
+import React from "react";
+
 const Dashboard = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -6,7 +8,7 @@ const Dashboard = () => {
         <p className="mt-4 mb-6">This is your user dashboard.</p>
         <button
           className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={() => alert("Logout functionality goes here")}
+          onClick={() => alert("Something")}
         >
           Logout
         </button>
