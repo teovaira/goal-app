@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+
+  const navigate = useNavigate();
   
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -53,7 +56,12 @@ const Login = () => {
 
     if (hasError) {
       return;
+    };
+
+    if (!hasError) {
+      navigate('/dashboard');
     }
+  };
 
     setError({ email: "", password: "" });
     console.log("Email:", email);
