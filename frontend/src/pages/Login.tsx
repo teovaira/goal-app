@@ -1,25 +1,34 @@
 import { useState } from "react";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid"; 
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState({ email: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false); 
+  
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<{ email: string; password: string }>({
+    email: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState<boolean>(false); 
 
-  const handleSubmit = (e: React.FormEvent) => {
+  
+  const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+  const passwordRegex: RegExp =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; 
+
+  
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
 
     setError({ email: "", password: "" });
 
-    let hasError = false; 
+    let hasError = false;
 
     if (!email) {
       setError((prev) => ({ ...prev, email: "Email is required." }));
       hasError = true;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError((prev) => ({
         ...prev,
@@ -33,8 +42,6 @@ const Login = () => {
       hasError = true;
     }
 
-    const passwordRegex =
-      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
       setError((prev) => ({
         ...prev,
@@ -93,7 +100,7 @@ const Login = () => {
             </label>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"} 
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={password}
@@ -103,7 +110,7 @@ const Login = () => {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} 
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
               >
                 {showPassword ? (
