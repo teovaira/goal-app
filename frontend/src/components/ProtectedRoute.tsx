@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
+import React, { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.tsx"; 
+import { useAuth } from "../context/useAuth"; 
 
 interface ProtectedRouteProps {
-  children: ReactElement;
+  children: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {

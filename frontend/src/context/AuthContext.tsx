@@ -1,16 +1,20 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { ReactNode, createContext, useState } from "react";
 
-interface AuthContextType {
+export interface AuthContextType {
   isAuthenticated: boolean;
   login: () => void;
   logout: () => void;
+}
+
+interface AuthProviderProps {
+  children: ReactNode; 
 }
 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 
-export const AuthProvider: React.FC = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const login = () => setIsAuthenticated(true);
@@ -24,10 +28,4 @@ export const AuthProvider: React.FC = ({ children }) => {
 };
 
 
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export default AuthContext;
