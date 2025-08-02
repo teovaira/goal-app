@@ -1,5 +1,5 @@
 import React from "react";
-
+import  useAuth  from "../context/useAuth";
 import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
 
   const navigate = useNavigate();
+  const { login } = useAuth();
   
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -61,6 +62,7 @@ const Login = () => {
     };
 
     if (!hasError) {
+      login()
       navigate('/dashboard');
     }
   
