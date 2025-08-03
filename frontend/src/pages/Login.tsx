@@ -1,28 +1,29 @@
-import React from "react";
-import  useAuth  from "../context/useAuth";
-import { useState } from "react";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import  useAuth from "../context/useAuth"; 
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
 const Login = () => {
-
   const navigate = useNavigate();
-  const { login } = useAuth();
-  
+  const { login } = useAuth(); 
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<{ email: string; password: string }>({
     email: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState<boolean>(false); 
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  
-  const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+
+  const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex: RegExp =
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; 
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  
+
+  const validEmail = "teovarate@papaki.com";
+  const validPassword = "Vv18198718!";
+
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
 
@@ -33,9 +34,7 @@ const Login = () => {
     if (!email) {
       setError((prev) => ({ ...prev, email: "Email is required." }));
       hasError = true;
-    }
-
-    if (!emailRegex.test(email)) {
+    } else if (!emailRegex.test(email)) {
       setError((prev) => ({
         ...prev,
         email: "Please enter a valid email address.",
@@ -46,9 +45,7 @@ const Login = () => {
     if (!password) {
       setError((prev) => ({ ...prev, password: "Password is required." }));
       hasError = true;
-    }
-
-    if (!passwordRegex.test(password)) {
+    } else if (!passwordRegex.test(password)) {
       setError((prev) => ({
         ...prev,
         password:
@@ -57,22 +54,20 @@ const Login = () => {
       hasError = true;
     }
 
+   
     if (hasError) {
       return;
-    };
-
-    if (!hasError) {
-      login()
-      navigate('/dashboard');
     }
-  
 
-    setError({ email: "", password: "" });
-    console.log("Email:", email);
-    console.log("Password:", password);
-
-    setEmail("");
-    setPassword("");
+    if (email === validEmail && password === validPassword) {
+      login(); 
+      navigate("/dashboard"); 
+    } else {
+      setError((prev) => ({
+        ...prev,
+        email: "Invalid credentials.",
+      }));
+    }
   };
 
   return (
