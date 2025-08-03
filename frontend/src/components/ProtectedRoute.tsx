@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, useEffect } from "react";
+import React, { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import useAuth from "../context/useAuth"; 
 
@@ -8,25 +8,12 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth(); 
-  const [showSpinner, setShowSpinner] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => {
-        setShowSpinner(true);
-      }, 500); 
-
-      return () => clearTimeout(timer); 
-    } else {
-      setShowSpinner(false); 
-    }
-  }, [isLoading]);
-
   
-  if (showSpinner) {
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="spinner"></div> 
+        <div className="spinner visible"></div> 
       </div>
     );
   }
