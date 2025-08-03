@@ -60,8 +60,7 @@ const Login = () => {
     }
 
     if (email === validEmail && password === validPassword) {
-      login(); 
-      navigate("/dashboard"); 
+      login(navigate);; 
     } else {
       setError((prev) => ({
         ...prev,
