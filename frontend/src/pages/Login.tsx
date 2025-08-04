@@ -68,8 +68,11 @@ const Login = () => {
         }
       );
 
-      const { token } = response.data;
+      const { token, _id, name, email: userEmail } = response.data;
       localStorage.setItem("authToken", token);
+      
+      const userData = { _id, name, email: userEmail };
+      localStorage.setItem("userData", JSON.stringify(userData));
 
       login(navigate);
 
@@ -110,6 +113,9 @@ const Login = () => {
           }));
         }
       }
+    } finally {
+      // Always reset loading state, even if there's an error
+      setIsLoading(false);
     }
 
   };
