@@ -75,42 +75,42 @@ const Login = () => {
 
       setEmail("");
       setPassword("");
-    } catch (err: AxiosError) {
-      if (err.response) {
-        const status = err.response.status;
-        if (status === 400 || status === 401) {
-          if (err.response.data.message === "Invalid email") {
-            setError((prev) => ({
-              ...prev,
-              email: "Invalid email address.",
-            }));
-          } else if (err.response.data.message === "Invalid password") {
-            setError((prev) => ({
-              ...prev,
-              password: "Invalid password.",
-            }));
-          } else {
-            setError((prev) => ({
-              ...prev,
-              email:
-                "Invalid credentials. Please check your email and password.",
-            }));
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        if (err.response) {
+          const status = err.response.status;
+          if (status === 400 || status === 401) {
+            if (err.response.data.message === "Invalid email") {
+              setError((prev) => ({
+                ...prev,
+                email: "Invalid email address.",
+              }));
+            } else if (err.response.data.message === "Invalid password") {
+              setError((prev) => ({
+                ...prev,
+                password: "Invalid password.",
+              }));
+            } else {
+              setError((prev) => ({
+                ...prev,
+                email:
+                  "Invalid credentials. Please check your email and password.",
+              }));
+            }
           }
+        } else if (err.request) {
+          setError((prev) => ({
+            ...prev,
+            email: "Network error, please try again.",
+          }));
+        } else {
+          setError((prev) => ({
+            ...prev,
+            email: "Something went wrong, please try again later.",
+          }));
         }
-      } else if (err.request) {
-        setError((prev) => ({
-          ...prev,
-          email: "Network error, please try again.",
-        }));
-      } else {
-        setError((prev) => ({
-          ...prev,
-          email: "Something went wrong, please try again later.",
-        }));
       }
-    } finally {
-      setIsLoading(false); 
-    };
+    }
 
   };
 
