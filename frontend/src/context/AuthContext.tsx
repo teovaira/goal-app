@@ -26,14 +26,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Helper function to check if token is expired
   const isTokenExpired = (token: string): boolean => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Date.now() / 1000;
       return payload.exp < currentTime;
     } catch {
-      return true; // If we can't decode it, consider it expired
+      return true;
     }
   };
 
@@ -47,13 +46,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           setUser(JSON.parse(userData));
         } catch {
-          // If user data is corrupted, clear everything
           localStorage.removeItem("authToken");
           localStorage.removeItem("userData");
         }
       }
     } else {
-      // Token is expired or doesn't exist, clear everything
       localStorage.removeItem("authToken");
       localStorage.removeItem("userData");
       setIsAuthenticated(false);
@@ -66,8 +63,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = (navigate: NavigateFunction) => {
     setIsAuthenticated(true);
-    // Note: We don't need to set localStorage here because Login.tsx already does it
-    // But we should get user data from localStorage if it's there
     const userData = localStorage.getItem("userData");
     if (userData) {
       try {
@@ -84,7 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     localStorage.removeItem("authToken");
     localStorage.removeItem("userData");
-    localStorage.removeItem("isAuthenticated"); // Clear old key just in case
+    localStorage.removeItem("isAuthenticated");
   };
 
   return (

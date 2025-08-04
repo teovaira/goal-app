@@ -114,7 +114,6 @@ const Login = () => {
         }
       }
     } finally {
-      // Always reset loading state, even if there's an error
       setIsLoading(false);
     }
 
