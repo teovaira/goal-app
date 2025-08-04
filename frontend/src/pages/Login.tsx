@@ -61,26 +61,42 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/users/login",
+        {
+          email,
+          password,
+        }
+      );
 
       const { token } = response.data;
       localStorage.setItem("authToken", token);
 
-      login(navigate);  
+      login(navigate);
 
       setEmail("");
       setPassword("");
-
     } catch (err) {
-      setError((prev) => ({
-        ...prev,
-        email: "Invalid credentials.",
-      }));
+      if (err.response) {
+        // Invalid credentials
+        setError((prev) => ({
+          ...prev,
+          email: "Invalid email or password.",
+        }));
+      } else if (err.request) {
+        // Network error
+        setError((prev) => ({
+          ...prev,
+          email: "Network error, please try again.",
+        }));
+      } else {
+        // Unknown error
+        setError((prev) => ({
+          ...prev,
+          email: "Something went wrong. Please try again later.",
+        }));
+      }
     }
-  };
 
   };
 
