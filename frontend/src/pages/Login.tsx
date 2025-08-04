@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import  useAuth from "../context/useAuth"; 
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const Login = () => {
 
@@ -76,7 +76,7 @@ const Login = () => {
 
       setEmail("");
       setPassword("");
-    } catch (err) {
+    } catch (err: AxiosError) {
       if (err.response) {
         setError((prev) => ({
           ...prev,
