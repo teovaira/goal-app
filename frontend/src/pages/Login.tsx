@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import  useAuth from "../context/useAuth"; 
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import axios from "axios";
 
 const Login = () => {
+
   const navigate = useNavigate();
   const { login } = useAuth(); 
 
@@ -20,9 +22,6 @@ const Login = () => {
   const passwordRegex: RegExp =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-
-  const validEmail = "teovarate@papaki.com";
-  const validPassword = "Vv18198718!";
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
@@ -59,14 +58,28 @@ const Login = () => {
       return;
     }
 
-    if (email === validEmail && password === validPassword) {
-      login(navigate);; 
-    } else {
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
+
+      const { token } = response.data;
+      localStorage.setItem("authToken", token);
+
+      login(navigate);  
+
+      setEmail("");
+      setPassword("");
+
+    } catch (err) {
       setError((prev) => ({
         ...prev,
         email: "Invalid credentials.",
       }));
     }
+  };
+
   };
 
   return (
