@@ -78,19 +78,16 @@ const Login = () => {
       setPassword("");
     } catch (err) {
       if (err.response) {
-        // Invalid credentials
         setError((prev) => ({
           ...prev,
           email: "Invalid email or password.",
         }));
       } else if (err.request) {
-        // Network error
         setError((prev) => ({
           ...prev,
           email: "Network error, please try again.",
         }));
       } else {
-        // Unknown error
         setError((prev) => ({
           ...prev,
           email: "Something went wrong. Please try again later.",
