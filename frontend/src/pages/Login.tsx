@@ -16,9 +16,7 @@ const Login = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
-
-
-  
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -27,6 +25,7 @@ const Login = () => {
     setError({ email: "", password: "" });
 
     let hasError = false;
+    setIsLoading(true);
 
     const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex: RegExp =
@@ -109,7 +108,9 @@ const Login = () => {
           email: "Something went wrong, please try again later.",
         }));
       }
-    }
+    } finally {
+      setIsLoading(false); 
+    };
 
   };
 
@@ -177,9 +178,13 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative"
           >
-            Login
+            {isLoading ? (
+              <div className="spinner visible absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
       </div>
