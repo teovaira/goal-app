@@ -21,7 +21,7 @@ const Login = () => {
   
 
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
     setError({ email: "", password: "" });
@@ -61,7 +61,7 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", {
+      const response = await axios.post("http://localhost:5000/api/users/login", {
         email,
         password,
       });
