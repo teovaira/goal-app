@@ -21,10 +21,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 
   useEffect(() => {
-    const storedAuthState = localStorage.getItem("isAuthenticated");
-    if (storedAuthState === "true") {
-      setIsAuthenticated(true);
-    }
+    const token = localStorage.getItem("authToken");
+
+     if (token) {
+       setIsAuthenticated(true); 
+     } else {
+       setIsAuthenticated(false); 
+     }
 
     setIsLoading(false);
   }, []);
@@ -38,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem("isAuthenticated"); 
+    localStorage.removeItem("authToken"); 
   };
 
   return (
