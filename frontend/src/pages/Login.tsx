@@ -18,9 +18,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
 
-  const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex: RegExp =
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  
 
 
   const handleSubmit = (e: React.FormEvent): void => {
@@ -29,6 +27,10 @@ const Login = () => {
     setError({ email: "", password: "" });
 
     let hasError = false;
+
+    const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex: RegExp =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!email) {
       setError((prev) => ({ ...prev, email: "Email is required." }));
