@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import  useAuth from "../context/useAuth"; 
+import { useNavigate, Link } from "react-router-dom";
+import  useAuth from "../context/useAuth";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import axios, { AxiosError } from "axios";
 
@@ -193,6 +193,13 @@ const Login = () => {
             )}
           </button>
         </form>
+
+        <p className="mt-4 text-gray-600">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );
