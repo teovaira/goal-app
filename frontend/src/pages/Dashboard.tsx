@@ -1,27 +1,43 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth  from "../context/useAuth"; 
+import useAuth from "../context/useAuth";
 
 const Dashboard = () => {
-  const { logout } = useAuth(); 
-  const navigate = useNavigate(); 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout(); 
-    navigate("/login"); 
+    logout();
+    navigate("/login");
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="text-center p-6 bg-white rounded-lg shadow-lg max-w-lg w-full">
-        <h2 className="text-3xl font-semibold">Welcome to the Dashboard</h2>
-        <p className="mt-4 mb-6">This is your user dashboard.</p>
-        <button
-          className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={handleLogout} 
-        >
-          Logout
-        </button>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Welcome to Dashboard!
+              </h1>
+              <p className="text-gray-600 mt-1">goal management system</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Goals Section</h2>
+          <p className="text-gray-600">
+            goal management functionality
+          </p>
+        </div>
       </div>
     </div>
   );
