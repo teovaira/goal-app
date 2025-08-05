@@ -15,6 +15,11 @@ const Navbar = () => {
             Login
           </Link>
         </li>
+        <li>
+          <Link to="/register" className="text-white">
+            Register
+          </Link>
+        </li>
       </ul>
     </nav>
   );
