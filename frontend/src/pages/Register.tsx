@@ -29,7 +29,7 @@ const Register = () => {
 
     const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex: RegExp =
-      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!name.trim()) {
       setError((prev) => ({ ...prev, name: "Name is required." }));
@@ -57,7 +57,7 @@ const Register = () => {
       setError((prev) => ({
         ...prev,
         password:
-          "Password must be at least 8 characters long, contain 1 uppercase letter, 1 number, and 1 special character.",
+          "Password must be at least 8 characters long, contain 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character.",
       }));
       hasError = true;
     }
