@@ -13,8 +13,11 @@ const Dashboard = () => {
   };
 
   const hardcodedGoal: Goal = {
-    id: "1",
-    text: "Learn React fundamentals"
+    _id: "1",
+    user: "current-user",
+    text: "Learn React fundamentals",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z"
   };
 
   return (
