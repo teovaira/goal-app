@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
+import { Goal } from "../types/goal";
 
 const Dashboard = () => {
   const { logout } = useAuth();
@@ -9,6 +10,11 @@ const Dashboard = () => {
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const hardcodedGoal: Goal = {
+    id: "1",
+    text: "Learn React fundamentals"
   };
 
   return (
@@ -35,7 +41,7 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Goals Section</h2>
           <p className="text-gray-600">
-            goal management functionality
+            {hardcodedGoal.text}
           </p>
         </div>
       </div>
