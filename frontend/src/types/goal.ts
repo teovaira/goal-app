@@ -1,4 +1,7 @@
 export interface Goal {
-  id: string;
+  _id: string;
+  user: string;
   text: string;
+  createdAt: string;
+  updatedAt: string;
 }
