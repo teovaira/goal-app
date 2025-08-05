@@ -56,6 +56,7 @@ const Login = () => {
 
    
     if (hasError) {
+      setIsLoading(false);
       return;
     }
 
