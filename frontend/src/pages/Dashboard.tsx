@@ -14,7 +14,10 @@ const Dashboard = () => {
   const [newGoalText, setNewGoalText] = useState<string>("");
   const [isCreating, setIsCreating] = useState<boolean>(false);
   
-  
+  // Editing state variables
+  const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
+  const [editedText, setEditedText] = useState<string>("");
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -50,6 +53,29 @@ const Dashboard = () => {
     } finally {
       setIsCreating(false);
     }
+  };
+
+  const handleUpdateGoal = async (goalId: string, newText: string) => {
+    if (!newText.trim()) return;
+
+    try {
+      setIsUpdating(true);
+      setError(null);
+      const updatedGoal = await goalsApi.updateGoal(goalId, newText.trim());
+      setGoals(goals.map(goal => goal._id === goalId ? updatedGoal : goal));
+      setEditingGoalId(null);
+      setEditedText("");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to update goal";
+      setError(errorMessage);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingGoalId(null);
+    setEditedText("");
   };
 
 
@@ -130,10 +156,52 @@ const Dashboard = () => {
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <p className="text-gray-800 font-medium">{goal.text}</p>
-                      <div className="mt-2 text-sm text-gray-500">
-                        Created: {new Date(goal.createdAt).toLocaleDateString()}
-                      </div>
+                      {editingGoalId === goal._id ? (
+                        <form onSubmit={(e) => {
+                          e.preventDefault();
+                          handleUpdateGoal(goal._id, editedText);
+                        }} className="w-full">
+                          <input
+                            type="text"
+                            value={editedText}
+                            onChange={(e) => setEditedText(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            disabled={isUpdating}
+                          />
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              type="submit"
+                              disabled={isUpdating || !editedText.trim()}
+                              className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            >
+                              {isUpdating ? "Updating..." : "Update"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleCancelEdit}
+                              className="px-3 py-1 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors text-sm"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        <>
+                          <p className="text-gray-800 font-medium">{goal.text}</p>
+                          <div className="mt-2 text-sm text-gray-500">
+                            Created: {new Date(goal.createdAt).toLocaleDateString()}
+                          </div>
+                          <button
+                            onClick={() => {
+                              setEditingGoalId(goal._id);
+                              setEditedText(goal.text);
+                            }}
+                            className="mt-2 px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors text-sm"
+                          >
+                            Edit
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
