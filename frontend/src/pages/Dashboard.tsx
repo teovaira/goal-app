@@ -14,10 +14,11 @@ const Dashboard = () => {
   const [newGoalText, setNewGoalText] = useState<string>("");
   const [isCreating, setIsCreating] = useState<boolean>(false);
   
-  // Editing state variables
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState<string>("");
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  
+  const [deletingGoalId, setDeletingGoalId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -78,8 +79,19 @@ const Dashboard = () => {
     setEditedText("");
   };
 
-
-
+  const handleDeleteGoal = async (goalId: string) => {
+    try {
+      setDeletingGoalId(goalId);
+      setError(null);
+      await goalsApi.deleteGoal(goalId);
+      setGoals(goals.filter(goal => goal._id !== goalId));
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to delete goal";
+      setError(errorMessage);
+    } finally {
+      setDeletingGoalId(null);
+    }
+  };
 
   const handleLogout = () => {
     logout();
