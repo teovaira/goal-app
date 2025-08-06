@@ -214,7 +214,11 @@ const Dashboard = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteGoal(goal._id)}
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete this goal?\n\n"${goal.text}"`)) {
+                                  handleDeleteGoal(goal._id);
+                                }
+                              }}
                               disabled={deletingGoalId === goal._id}
                               className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
