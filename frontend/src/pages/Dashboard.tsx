@@ -11,6 +11,8 @@ const Dashboard = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [newGoalText, setNewGoalText] = useState<string>("");
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -29,6 +31,24 @@ const Dashboard = () => {
 
     fetchGoals();
   }, []);
+
+  const handleCreateGoal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newGoalText.trim()) return;
+
+    try {
+      setIsCreating(true);
+      setError(null);
+      const newGoal = await goalsApi.createGoal(newGoalText.trim());
+      setGoals([...goals, newGoal]);
+      setNewGoalText("");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to create goal";
+      setError(errorMessage);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -91,10 +111,30 @@ const Dashboard = () => {
           
           {!isLoading && !error && goals.length === 0 && (
             <div className="text-center py-8">
-              <div className="text-gray-500">
+              <div className="text-gray-500 mb-6">
                 <p className="text-lg font-medium mb-2">No goals yet!</p>
                 <p>Start by creating your first goal to track your progress.</p>
               </div>
+              
+              <form onSubmit={handleCreateGoal} className="max-w-md mx-auto">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={newGoalText}
+                    onChange={(e) => setNewGoalText(e.target.value)}
+                    placeholder="Enter your goal..."
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled={isCreating}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isCreating || !newGoalText.trim()}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isCreating ? "Creating..." : "Create Goal"}
+                  </button>
+                </div>
+              </form>
             </div>
           )}
         </div>
