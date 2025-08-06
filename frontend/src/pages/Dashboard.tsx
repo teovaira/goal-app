@@ -9,13 +9,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         setError(null);
         const fetchedGoals = await goalsApi.getAllGoals();
         setGoals(fetchedGoals);
@@ -23,7 +23,7 @@ const Dashboard = () => {
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch goals";
         setError(errorMessage);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -59,13 +59,13 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Goals</h2>
           
-          {loading && (
+          {isLoading && (
             <div className="flex items-center justify-center py-8">
               <div className="text-gray-600">Loading your goals...</div>
             </div>
           )}
           
-          {error && !loading && (
+          {error && !isLoading && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
               <div className="text-red-800">
                 <strong>Error:</strong> {error}
@@ -73,7 +73,7 @@ const Dashboard = () => {
             </div>
           )}
           
-          {!loading && !error && goals.length > 0 && (
+          {!isLoading && !error && goals.length > 0 && (
             <div className="space-y-3">
               {goals.map((goal) => (
                 <div
@@ -89,7 +89,7 @@ const Dashboard = () => {
             </div>
           )}
           
-          {!loading && !error && goals.length === 0 && (
+          {!isLoading && !error && goals.length === 0 && (
             <div className="text-center py-8">
               <div className="text-gray-500">
                 <p className="text-lg font-medium mb-2">No goals yet!</p>
