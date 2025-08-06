@@ -203,15 +203,24 @@ const Dashboard = () => {
                           <div className="mt-2 text-sm text-gray-500">
                             Created: {new Date(goal.createdAt).toLocaleDateString()}
                           </div>
-                          <button
-                            onClick={() => {
-                              setEditingGoalId(goal._id);
-                              setEditedText(goal.text);
-                            }}
-                            className="mt-2 px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors text-sm"
-                          >
-                            Edit
-                          </button>
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              onClick={() => {
+                                setEditingGoalId(goal._id);
+                                setEditedText(goal.text);
+                              }}
+                              className="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors text-sm"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteGoal(goal._id)}
+                              disabled={deletingGoalId === goal._id}
+                              className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {deletingGoalId === goal._id ? "Deleting..." : "Delete"}
+                            </button>
+                          </div>
                         </>
                       )}
                     </div>
