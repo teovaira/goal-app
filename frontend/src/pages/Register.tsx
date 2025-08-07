@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import axios, { AxiosError } from "axios";
+import useAuth from "../context/useAuth";
+import { handleGoogleSuccess } from "../services/googleAuth";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -17,6 +21,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
+  const [googleError, setGoogleError] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -226,6 +231,42 @@ const Register = () => {
             )}
           </button>
         </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                setGoogleError("");
+                setIsLoading(true);
+                try {
+                  await handleGoogleSuccess(credentialResponse, login, navigate, true);
+                } catch (error) {
+                  setGoogleError(error instanceof Error ? error.message : "Google registration failed");
+                  setIsLoading(false);
+                }
+              }}
+              onError={() => {
+                setGoogleError("Google registration failed");
+              }}
+              theme="outline"
+              size="large"
+              width="100%"
+              text="signup_with"
+            />
+            {googleError && (
+              <p className="mt-2 text-red-500 text-sm">{googleError}</p>
+            )}
+          </div>
+        </div>
 
         <p className="mt-4 text-gray-600">
           Already have an account?{" "}
