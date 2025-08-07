@@ -3,7 +3,7 @@ import React from "react";
 import useAuth from "../context/useAuth";
 
 const Navbar = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   
   return (
     <nav className="bg-gray-800 p-4">
@@ -14,11 +14,21 @@ const Navbar = () => {
           </Link>
         </li>
         {isAuthenticated ? (
-          <li>
-            <Link to="/dashboard" className="text-white">
-              Dashboard
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link to="/dashboard" className="text-white">
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <button
+                onClick={logout}
+                className="text-white bg-transparent border-none cursor-pointer hover:text-gray-300"
+              >
+                Logout
+              </button>
+            </li>
+          </>
         ) : (
           <>
             <li>
