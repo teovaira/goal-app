@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import { useNotification } from "../context/useNotification";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import axios, { AxiosError } from "axios";
 import useAuth from "../context/useAuth";
@@ -9,6 +10,7 @@ import { handleGoogleSuccess } from "../services/googleAuth";
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showNotification } = useNotification();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -82,14 +84,14 @@ const Register = () => {
         }
       );
 
-      setSuccessMessage("Registration successful! You can now login.");
+      showNotification("Registration successful! Welcome to Goal Tracker.");
       setName("");
       setEmail("");
       setPassword("");
       
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 1500);
 
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
@@ -248,7 +250,7 @@ const Register = () => {
                 setGoogleError("");
                 setIsLoading(true);
                 try {
-                  await handleGoogleSuccess(credentialResponse, login, navigate, true);
+                  await handleGoogleSuccess(credentialResponse, login, navigate, true, showNotification);
                 } catch (error) {
                   setGoogleError(error instanceof Error ? error.message : "Google registration failed");
                   setIsLoading(false);
