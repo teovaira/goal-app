@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import  useAuth from "../context/useAuth";
+import { useNotification } from "../context/useNotification";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import axios, { AxiosError } from "axios";
 import { handleGoogleSuccess } from "../services/googleAuth";
@@ -9,7 +10,8 @@ import { handleGoogleSuccess } from "../services/googleAuth";
 const Login = () => {
 
   const navigate = useNavigate();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
+  const { showNotification } = useNotification();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -78,6 +80,7 @@ const Login = () => {
       const userData = { _id, name, email: userEmail };
       localStorage.setItem("userData", JSON.stringify(userData));
 
+      showNotification("Welcome back! Login successful.");
       login(navigate);
 
       setEmail("");
@@ -213,7 +216,7 @@ const Login = () => {
                 setGoogleError("");
                 setIsLoading(true);
                 try {
-                  await handleGoogleSuccess(credentialResponse, login, navigate, false);
+                  await handleGoogleSuccess(credentialResponse, login, navigate, false, showNotification);
                 } catch (error) {
                   setGoogleError(error instanceof Error ? error.message : "Google login failed");
                   setIsLoading(false);
