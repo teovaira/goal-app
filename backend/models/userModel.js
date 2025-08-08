@@ -47,12 +47,19 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"]
+      required: function() {
+        return !this.googleID;
+      }
     },
     email: {
       type: String,
       required: [true, "Please insert an email"],
       unique: true,
+    },
+    googleID: {
+      type: String,
+      unique: true,
+      sparse: true
     }
     
   },
