@@ -99,6 +99,7 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
+    showNotification("Logged out successfully!");
     logout();
     navigate("/login");
   };
