@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const generateToken = require("../utils/generateToken");
 const logger = require("../config/logger");
 const { OAuth2Client } = require("google-auth-library");
+const { validatePassword, getPasswordErrorMessage } = require("../utils/passwordValidator");
 
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -23,6 +24,12 @@ const registerUser = asyncHandler(async (req, res) => {
     logger.warn("Registration failed: Missing fields");
     res.status(400);
     throw new Error("Please add all fields.");
+  }
+
+  if (!validatePassword(password)) {
+    logger.warn("Registration failed: Password does not meet requirements");
+    res.status(400);
+    throw new Error(getPasswordErrorMessage());
   }
 
   const userExists = await User.findOne({ email });
