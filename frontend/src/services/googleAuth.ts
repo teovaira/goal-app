@@ -31,7 +31,8 @@ export const handleGoogleSuccess = async (
   credentialResponse: CredentialResponse,
   login: (navigate: NavigateFunction) => void,
   navigate: NavigateFunction,
-  isRegistration: boolean = false
+  isRegistration: boolean = false,
+  showNotification?: (message: string, type?: "success" | "error" | "info") => void
 ): Promise<void> => {
   try {
     const authData = await authenticateWithGoogle(credentialResponse, isRegistration);
@@ -44,6 +45,14 @@ export const handleGoogleSuccess = async (
       email: authData.email,
     };
     localStorage.setItem('userData', JSON.stringify(userData));
+    
+    // Show success notification if provided
+    if (showNotification) {
+      const message = isRegistration
+        ? "Registration successful! Welcome to Goal Tracker."
+        : "Welcome back! Login successful.";
+      showNotification(message);
+    }
     
     // Use the existing login function from AuthContext
     login(navigate);
