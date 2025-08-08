@@ -61,21 +61,24 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div className={`fixed top-4 right-4 z-50 animate-slide-in`}>
-      <div className={`${getBackgroundColor()} text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 min-w-[300px] max-w-md`}>
-        <div className="flex-shrink-0">
-          {getIcon()}
+      <div className={`relative overflow-hidden ${getBackgroundColor()} text-white rounded-lg shadow-2xl flex items-center min-w-[320px] max-w-md`}>
+        <div className="absolute top-0 left-0 h-full w-1 bg-white opacity-20"></div>
+        <div className="flex items-center px-6 py-4 space-x-3 w-full">
+          <div className="flex-shrink-0 bg-white bg-opacity-20 rounded-full p-2">
+            {getIcon()}
+          </div>
+          <div className="flex-1">
+            <p className="text-base font-medium leading-tight">{message}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex-shrink-0 ml-4 hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-all duration-200"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-medium">{message}</p>
-        </div>
-        <button
-          onClick={onClose}
-          className="flex-shrink-0 ml-4 hover:opacity-75 transition-opacity"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
     </div>
   );
