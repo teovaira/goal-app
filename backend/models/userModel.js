@@ -20,6 +20,9 @@ const mongoose = require("mongoose");
  *           type: string
  *           format: email
  *           description: The user's email address
+ *         googleID:
+ *           type: string
+ *           description: The user's Google OAuth ID (optional, only for Google sign-in users)
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -32,6 +35,7 @@ const mongoose = require("mongoose");
  *         _id: 60f7c0d8b123456789abcdef
  *         name: Teo
  *         email: teo@example.com
+ *         googleID: "115842906234567890123"
  *         createdAt: 2025-07-22T10:00:00.000Z
  *         updatedAt: 2025-07-22T10:00:00.000Z
  */
