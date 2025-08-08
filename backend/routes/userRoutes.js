@@ -11,6 +11,8 @@ const {
   registerUser,
   loginUser,
   getMe,
+  googleLogin,
+  googleRegister,
 } = require("../controllers/userController");
 const verifyToken = require("../middlewares/authMiddleware");
 
@@ -99,5 +101,57 @@ router.post("/login", loginUser);
  */
 
 router.get("/me", verifyToken, getMe);
+
+/**
+ * @swagger
+ * /api/users/google-login:
+ *   post:
+ *     summary: Login with Google OAuth
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Google OAuth token
+ *                 example: eyJhbGciOiJSUzI1NiIsImtpZCI...
+ *     responses:
+ *       200:
+ *         description: User logged in successfully with Google
+ *       400:
+ *         description: Invalid token or missing data
+ *       404:
+ *         description: User not found - needs to register first
+ */
+router.post("/google-login", googleLogin);
+
+/**
+ * @swagger
+ * /api/users/google-register:
+ *   post:
+ *     summary: Register a new user with Google OAuth
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Google OAuth token
+ *                 example: eyJhbGciOiJSUzI1NiIsImtpZCI...
+ *     responses:
+ *       201:
+ *         description: User registered successfully with Google
+ *       400:
+ *         description: Invalid token or user already exists
+ */
+router.post("/google-register", googleRegister);
 
 module.exports = router;
