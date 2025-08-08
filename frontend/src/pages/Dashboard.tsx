@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
+import { useNotification } from "../context/useNotification";
 import { Goal } from "../types/goal";
 import { goalsApi } from "../services/goalsApi";
 
 const Dashboard = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -48,6 +50,7 @@ const Dashboard = () => {
       const newGoal = await goalsApi.createGoal(newGoalText.trim());
       setGoals([...goals, newGoal]);
       setNewGoalText("");
+      showNotification("Goal created successfully!");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to create goal";
       setError(errorMessage);
@@ -66,6 +69,7 @@ const Dashboard = () => {
       setGoals(goals.map(goal => goal._id === goalId ? updatedGoal : goal));
       setEditingGoalId(null);
       setEditedText("");
+      showNotification("Goal updated successfully!");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to update goal";
       setError(errorMessage);
@@ -85,6 +89,7 @@ const Dashboard = () => {
       setError(null);
       await goalsApi.deleteGoal(goalId);
       setGoals(goals.filter(goal => goal._id !== goalId));
+      showNotification("Goal deleted successfully!");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to delete goal";
       setError(errorMessage);
