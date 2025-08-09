@@ -126,6 +126,12 @@ const Dashboard = () => {
     return true;
   });
 
+  const completedGoalsCount = goals.filter(goal => goal.completed).length;
+  const totalGoalsCount = goals.length;
+  
+  const filteredCompletedCount = filteredGoals.filter(goal => goal.completed).length;
+  const filteredTotalCount = filteredGoals.length;
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,7 +155,23 @@ const Dashboard = () => {
         
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Your Goals</h2>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Your Goals</h2>
+              {totalGoalsCount > 0 && (
+                <p className="text-sm text-gray-600 mt-1">
+                  {filter === 'all' ? (
+                    <>
+                      {completedGoalsCount} of {totalGoalsCount} completed
+                      {completedGoalsCount === totalGoalsCount && totalGoalsCount > 0 && " 🏆"}
+                    </>
+                  ) : (
+                    <>
+                      Showing {filteredTotalCount} {filter} goal{filteredTotalCount !== 1 ? 's' : ''}
+                    </>
+                  )}
+                </p>
+              )}
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setFilter('all')}
