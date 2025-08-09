@@ -43,11 +43,11 @@ export const goalsApi = {
     }
   },
 
-  async updateGoal(goalId: string, goalText: string): Promise<Goal> {
+  async updateGoal(goalId: string, updates: { text?: string; completed?: boolean }): Promise<Goal> {
     try {
       const response = await axios.put(
         `${API_URL}/${goalId}`,
-        { text: goalText },
+        updates,
         { headers: getAuthHeaders() }
       );
       return response.data;
