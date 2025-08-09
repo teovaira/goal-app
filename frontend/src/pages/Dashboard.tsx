@@ -21,6 +21,9 @@ const Dashboard = () => {
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   
   const [deletingGoalId, setDeletingGoalId] = useState<string | null>(null);
+  
+  type FilterType = 'all' | 'active' | 'completed';
+  const [filter, setFilter] = useState<FilterType>('all');
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -116,6 +119,13 @@ const Dashboard = () => {
     navigate("/login");
   };
 
+  const filteredGoals = goals.filter(goal => {
+    if (filter === 'all') return true;
+    if (filter === 'active') return !goal.completed;
+    if (filter === 'completed') return goal.completed;
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,7 +148,41 @@ const Dashboard = () => {
 
         
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Goals</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Your Goals</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setFilter('active')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'active'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Active
+              </button>
+              <button
+                onClick={() => setFilter('completed')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  filter === 'completed'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Completed
+              </button>
+            </div>
+          </div>
           
           <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-md">
             <h3 className="text-lg font-medium text-gray-900 mb-3">Create New Goal</h3>
@@ -179,7 +223,18 @@ const Dashboard = () => {
           
           {!isLoading && !error && goals.length > 0 && (
             <div className="space-y-3">
-              {goals.map((goal) => (
+              {filteredGoals.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p className="text-lg font-medium mb-2">
+                    No {filter === 'all' ? '' : filter} goals found
+                  </p>
+                  <p className="text-sm">
+                    {filter === 'active' && "You've completed all your goals! 🎉"}
+                    {filter === 'completed' && "No completed goals yet. Keep working on your active goals!"}
+                  </p>
+                </div>
+              ) : (
+                filteredGoals.map((goal) => (
                 <div
                   key={goal._id}
                   className="p-4 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
@@ -263,7 +318,8 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+                ))
+              )}
             </div>
           )}
           
