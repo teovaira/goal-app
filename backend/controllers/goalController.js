@@ -25,6 +25,7 @@ const createGoal = asyncHandler(async (req,res) => {
 
   const goal = await Goal.create({
     text: req.body.text,
+    completed: req.body.completed || false,
     user: req.user.id
   });
 
@@ -51,10 +52,10 @@ const createGoal = asyncHandler(async (req,res) => {
         throw new Error("Goal not found.");
       };
 
-      if (!req.body?.text) {
-        logger.warn("Missing request body or text field in the update request");
+      if (!req.body || (!req.body.text && req.body.completed === undefined)) {
+        logger.warn("Missing request body or no fields to update");
         res.status(400);
-        throw new Error("Please add a text field.")
+        throw new Error("Please provide at least one field to update (text or completed).")
       };
 
       if (goal.user.toString() !== req.user.id) {
@@ -65,9 +66,13 @@ const createGoal = asyncHandler(async (req,res) => {
         throw new Error("Not authorized to update this goal");
       };
 
+      const updateData = {};
+      if (req.body.text !== undefined) updateData.text = req.body.text;
+      if (req.body.completed !== undefined) updateData.completed = req.body.completed;
+
       const updatedGoal = await Goal.findByIdAndUpdate(req.params.id,
-       {text: req.body.text},
-       {new: true});
+       updateData,
+       {new: true, runValidators: true});
 
        logger.info(`Goal with id: ${req.params.id} updated by user ${req.user.id}`);
 
