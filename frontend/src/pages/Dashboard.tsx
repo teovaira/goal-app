@@ -205,9 +205,24 @@ const Dashboard = () => {
                         </form>
                       ) : (
                         <>
-                          <p className="text-gray-800 font-medium">{goal.text}</p>
-                          <div className="mt-2 text-sm text-gray-500">
-                            Created: {new Date(goal.createdAt).toLocaleDateString()}
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              checked={goal.completed}
+                              onChange={() => {}}
+                              className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <div className="flex-1">
+                              <p className={`text-gray-800 font-medium ${goal.completed ? 'line-through text-gray-500' : ''}`}>
+                                {goal.text}
+                              </p>
+                              <div className="mt-1 text-sm text-gray-500">
+                                Created: {new Date(goal.createdAt).toLocaleDateString()}
+                                {goal.completed && (
+                                  <span className="ml-2 text-green-600">✓ Completed</span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                           <div className="mt-2 flex gap-2">
                             <button
