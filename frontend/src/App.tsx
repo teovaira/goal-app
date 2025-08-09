@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./pages/NotFound";
 import { GOOGLE_CLIENT_ID } from "./config/oauth";
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
         </NotificationProvider>
