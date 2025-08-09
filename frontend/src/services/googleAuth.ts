@@ -17,7 +17,7 @@ export const authenticateWithGoogle = async (
     const endpoint = isRegistration ? '/api/users/google-register' : '/api/users/google-login';
     
     const response = await axios.post(`http://localhost:5000${endpoint}`, {
-      credential: credentialResponse.credential,
+      token: credentialResponse.credential,
     });
 
     return response.data;
