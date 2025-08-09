@@ -65,7 +65,7 @@ const Dashboard = () => {
     try {
       setIsUpdating(true);
       setError(null);
-      const updatedGoal = await goalsApi.updateGoal(goalId, newText.trim());
+      const updatedGoal = await goalsApi.updateGoal(goalId, { text: newText.trim() });
       setGoals(goals.map(goal => goal._id === goalId ? updatedGoal : goal));
       setEditingGoalId(null);
       setEditedText("");
@@ -75,6 +75,18 @@ const Dashboard = () => {
       setError(errorMessage);
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleToggleComplete = async (goalId: string, currentStatus: boolean) => {
+    try {
+      setError(null);
+      const updatedGoal = await goalsApi.updateGoal(goalId, { completed: !currentStatus });
+      setGoals(goals.map(goal => goal._id === goalId ? updatedGoal : goal));
+      showNotification(`Goal marked as ${!currentStatus ? 'completed' : 'incomplete'}!`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to update goal status";
+      setError(errorMessage);
     }
   };
 
@@ -209,8 +221,8 @@ const Dashboard = () => {
                             <input
                               type="checkbox"
                               checked={goal.completed}
-                              onChange={() => {}}
-                              className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              onChange={() => handleToggleComplete(goal._id, goal.completed)}
+                              className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                             />
                             <div className="flex-1">
                               <p className={`text-gray-800 font-medium ${goal.completed ? 'line-through text-gray-500' : ''}`}>
