@@ -17,6 +17,9 @@
  *         text:
  *           type: string
  *           description: The goal content
+ *         completed:
+ *           type: boolean
+ *           description: Whether the goal has been completed
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -27,6 +30,7 @@
  *         _id: 60f7c0d8b123456789abcdef
  *         user: 60f7c0d8b123456789abcdea
  *         text: Learn Swagger
+ *         completed: false
  *         createdAt: 2025-07-22T10:00:00.000Z
  *         updatedAt: 2025-07-22T10:00:00.000Z
  */
@@ -43,6 +47,10 @@ const goalSchema = new mongoose.Schema(
     text: {
       type: String,
       required: [true, "Please add a text value"],
+    },
+    completed: {
+      type: Boolean,
+      default: false,
     },
   },
   {
