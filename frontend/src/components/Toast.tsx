@@ -60,24 +60,24 @@ const Toast: React.FC<ToastProps> = ({
   };
 
   return (
-    <div className={`fixed top-4 right-4 z-50 animate-slide-in`}>
+    <div className={`fixed top-4 right-4 left-4 sm:left-auto z-50 animate-slide-in`}>
       <div
-        className={`relative overflow-hidden ${getBackgroundColor()} text-white rounded-lg shadow-2xl flex items-center min-w-[320px] max-w-md`}
+        className={`relative overflow-hidden ${getBackgroundColor()} text-white rounded-lg shadow-2xl flex items-center w-full sm:min-w-[320px] sm:max-w-md`}
         role="alert"
         aria-live={type === "error" ? "assertive" : "polite"}
         aria-atomic="true"
       >
         <div className="absolute top-0 left-0 h-full w-1 bg-white opacity-20"></div>
-        <div className="flex items-center px-6 py-4 space-x-3 w-full">
-          <div className="flex-shrink-0 bg-white bg-opacity-20 rounded-full p-2">
+        <div className="flex items-center px-4 sm:px-6 py-3 sm:py-4 space-x-2 sm:space-x-3 w-full">
+          <div className="flex-shrink-0 bg-white bg-opacity-20 rounded-full p-1.5 sm:p-2">
             {getIcon()}
           </div>
-          <div className="flex-1">
-            <p className="text-base font-medium leading-tight">{message}</p>
+          <div className="flex-1 mr-2">
+            <p className="text-sm sm:text-base font-medium leading-tight break-words">{message}</p>
           </div>
           <button
             onClick={onClose}
-            className="flex-shrink-0 ml-4 hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-all duration-200"
+            className="flex-shrink-0 hover:bg-white hover:bg-opacity-20 rounded-full p-1.5 sm:p-1 transition-all duration-200 min-w-[32px] min-h-[32px] flex items-center justify-center"
             aria-label="Close notification"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

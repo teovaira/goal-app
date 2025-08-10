@@ -131,10 +131,10 @@ const Register = () => {
   };
 
   return (
-    <main className="flex justify-center items-center h-screen bg-gray-200">
-      <div className="text-center p-6 bg-white rounded-lg shadow-lg max-w-lg w-full">
-        <h1 className="text-3xl font-semibold">Register</h1>
-        <p className="mt-4 mb-6">Create your account to get started.</p>
+    <main className="flex justify-center items-center min-h-screen bg-gray-200 px-4 py-8">
+      <div className="text-center p-6 sm:p-8 bg-white rounded-lg shadow-lg max-w-lg w-full">
+        <h1 className="text-2xl sm:text-3xl font-semibold">Register</h1>
+        <p className="mt-3 sm:mt-4 mb-6 text-sm sm:text-base">Create your account to get started.</p>
 
         {successMessage && (
           <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
@@ -156,7 +156,7 @@ const Register = () => {
               name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2.5 sm:py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
               placeholder="Your full name"
               aria-invalid={!!error.name}
               aria-describedby={error.name ? "name-error" : undefined}
@@ -179,7 +179,7 @@ const Register = () => {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2.5 sm:py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
               placeholder="Your email"
               aria-invalid={!!error.email}
               aria-describedby={error.email ? "email-error" : undefined}
@@ -203,7 +203,7 @@ const Register = () => {
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 sm:py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base pr-12"
                 placeholder="Your password"
                 aria-invalid={!!error.password}
                 aria-describedby={error.password ? "password-error" : undefined}
@@ -211,7 +211,7 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -229,7 +229,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative disabled:opacity-50"
+            className="w-full py-3 sm:py-2.5 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative disabled:opacity-50 min-h-[44px]"
           >
             {isLoading ? (
               <div className="spinner visible absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" role="status" aria-label="Loading"></div>
@@ -275,9 +275,9 @@ const Register = () => {
           </div>
         </div>
 
-        <p className="mt-4 text-gray-700">
+        <p className="mt-4 text-sm sm:text-base text-gray-700">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-blue-600 hover:underline inline-block py-1">
             Login here
           </Link>
         </p>

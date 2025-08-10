@@ -13,7 +13,7 @@
 
 
 .spinner.visible {
-  opacity: 1;  
+  opacity: 1;
 }
 
 @keyframes spin {
@@ -49,4 +49,57 @@
 
 .animate-slide-out {
   animation: slide-out 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  /* Ensure full-width buttons on mobile */
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  /* Adjust padding for mobile screens */
+  .mobile-px-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Stack elements vertically on mobile */
+  .mobile-flex-col {
+    flex-direction: column !important;
+  }
+  
+  /* Adjust text sizes for better mobile readability */
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Ensure proper spacing on mobile */
+  .mobile-space-y-2 > * + * {
+    margin-top: 0.5rem !important;
+  }
+}
+
+/* Touch-friendly button sizes */
+@media (max-width: 768px) {
+  button, a[role="button"], .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input[type="checkbox"] {
+    min-width: 20px;
+    min-height: 20px;
+  }
+}
+
+/* Improve form input sizes on mobile */
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem;
+  }
 }

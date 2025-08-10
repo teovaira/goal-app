@@ -124,10 +124,10 @@ const Login = () => {
   };
 
   return (
-    <main className="flex justify-center items-center h-screen bg-gray-200">
-      <div className="text-center p-6 bg-white rounded-lg shadow-lg max-w-lg w-full">
-        <h1 className="text-3xl font-semibold">Login Page</h1>
-        <p className="mt-4 mb-6">Enter your credentials to login.</p>
+    <main className="flex justify-center items-center min-h-screen bg-gray-200 px-4 py-8">
+      <div className="text-center p-6 sm:p-8 bg-white rounded-lg shadow-lg max-w-lg w-full">
+        <h1 className="text-2xl sm:text-3xl font-semibold">Login Page</h1>
+        <p className="mt-3 sm:mt-4 mb-6 text-sm sm:text-base">Enter your credentials to login.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -143,7 +143,7 @@ const Login = () => {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2.5 sm:py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
               placeholder="Your email"
               aria-invalid={!!error.email}
               aria-describedby={error.email ? "email-error" : undefined}
@@ -167,7 +167,7 @@ const Login = () => {
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 sm:py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base pr-12"
                 placeholder="Your password"
                 aria-invalid={!!error.password}
                 aria-describedby={error.password ? "password-error" : undefined}
@@ -175,7 +175,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -192,7 +192,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative"
+            className="w-full py-3 sm:py-2.5 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative min-h-[44px]"
           >
             {isLoading ? (
               <div className="spinner visible absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" role="status" aria-label="Loading"></div>
@@ -238,9 +238,9 @@ const Login = () => {
           </div>
         </div>
 
-        <p className="mt-4 text-gray-700">
+        <p className="mt-4 text-sm sm:text-base text-gray-700">
           Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link to="/register" className="text-blue-600 hover:underline inline-block py-1">
             Register here
           </Link>
         </p>
