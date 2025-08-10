@@ -2,6 +2,7 @@ const Goal = require("../models/goalModel")
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const logger = require("../config/logger");
+const { sanitizeRequestBody } = require("../utils/logSanitizer");
 
 
 const getGoals = asyncHandler( async (req, res) => {
@@ -15,7 +16,7 @@ const getGoals = asyncHandler( async (req, res) => {
 
 const createGoal = asyncHandler(async (req,res) => {
   logger.info("Post /api/goals - Creating new goal");
-  logger.debug(`Request body: ${JSON.stringify(req.body)}`);
+  logger.debug(`Request body: ${JSON.stringify(sanitizeRequestBody(req.body))}`);
 
   if (!req.body || !req.body.text) {
     logger.warn("Goal creation failed: missing text field");

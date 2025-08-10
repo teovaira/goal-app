@@ -5,11 +5,12 @@ const generateToken = require("../utils/generateToken");
 const logger = require("../config/logger");
 const { OAuth2Client } = require("google-auth-library");
 const { validatePassword, getPasswordErrorMessage } = require("../utils/passwordValidator");
+const { sanitizeRequestBody } = require("../utils/logSanitizer");
 
 
 const registerUser = asyncHandler(async (req, res) => {
   logger.info("POST /api/users - Registering user");
-  logger.debug(`Request body: ${JSON.stringify(req.body)}`);
+  logger.debug(`Request body: ${JSON.stringify(sanitizeRequestBody(req.body))}`);
 
   if (!req.body) {
     logger.warn("Registration failed: Request body is missing");
@@ -33,7 +34,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const userExists = await User.findOne({ email });
   if (userExists) {
-    logger.warn(`Registration failed: User with email: ${email} already exists`);
+    logger.warn(`Registration failed: User already exists`);
     res.status(400);
     throw new Error("User already exists.");
   }
@@ -64,7 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler( async (req, res) => {
   logger.info("POST /api/users/login - Attempting login");
-  logger.debug(`Request body: ${ JSON.stringify(req.body)}`);
+  logger.debug(`Request body: ${ JSON.stringify(sanitizeRequestBody(req.body))}`);
  const {email, password} = req.body;
 
  if (!req.body) {
@@ -82,7 +83,7 @@ const loginUser = asyncHandler( async (req, res) => {
  const user = await User.findOne({email});
 
  if (!user || !(await bcrypt.compare(password, user.password))) {
-  logger.error(`Login failed: Invalid credentials for user with email: ${email}`);
+  logger.error(`Login failed: Invalid credentials`);
   res.status(401);
   throw new Error("Invalid credentials");
  }
@@ -192,7 +193,7 @@ const googleRegister = asyncHandler(async (req, res) => {
     });
     
     if (existingUser) {
-      logger.warn(`Google registration failed: User already exists with email: ${email} or Google ID: ${googleID}`);
+      logger.warn(`Google registration failed: User already exists`);
       res.status(400);
       throw new Error("User already exists");
     }
