@@ -1,5 +1,6 @@
-import React, { createContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useState, ReactNode, useEffect } from "react";
 import { NavigateFunction } from "react-router-dom";
+import { authStorage } from "../utils/authStorage";
 
 interface User {
   _id: string;
@@ -37,22 +38,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const userData = localStorage.getItem("userData");
+    const token = authStorage.getAuthToken();
+    const userData = authStorage.getUserData();
 
     if (token && !isTokenExpired(token)) {
       setIsAuthenticated(true);
       if (userData) {
-        try {
-          setUser(JSON.parse(userData));
-        } catch {
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("userData");
-        }
+        setUser(userData);
       }
     } else {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userData");
+      authStorage.clearAuthData();
       setIsAuthenticated(false);
       setUser(null);
     }
@@ -63,13 +58,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = (navigate: NavigateFunction) => {
     setIsAuthenticated(true);
-    const userData = localStorage.getItem("userData");
+    const userData = authStorage.getUserData();
     if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch {
-        console.error("Failed to parse user data");
-      }
+      setUser(userData);
     }
     navigate("/dashboard")
   };
@@ -77,9 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
-    localStorage.removeItem("isAuthenticated");
+    authStorage.clearAuthData();
   };
 
   return (
