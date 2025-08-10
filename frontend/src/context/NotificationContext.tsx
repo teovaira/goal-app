@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ReactNode } from "react";
+import { useState, useCallback, ReactNode } from "react";
 import Toast from "../components/Toast";
 import { Notification } from "./NotificationTypes";
 import { NotificationContext } from "./NotificationContextValue";

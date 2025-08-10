@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import { useState } from "react";
 import useAuth from "../context/useAuth";
 import { useNotification } from "../context/useNotification";
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const { showNotification } = useNotification();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   

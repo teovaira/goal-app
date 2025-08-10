@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
 import { useNotification } from "../context/useNotification";
@@ -129,7 +129,6 @@ const Dashboard = () => {
   const completedGoalsCount = goals.filter(goal => goal.completed).length;
   const totalGoalsCount = goals.length;
   
-  const filteredCompletedCount = filteredGoals.filter(goal => goal.completed).length;
   const filteredTotalCount = filteredGoals.length;
 
   return (

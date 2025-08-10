@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 interface ToastProps {
   message: string;
@@ -7,7 +7,7 @@ interface ToastProps {
   onClose: () => void;
 }
 
-const Toast: React.FC<ToastProps> = ({ 
+const Toast: React.FC<ToastProps> = ({
   message, 
   type = "success", 
   duration = 3000, 
