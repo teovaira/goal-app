@@ -1,1 +1,782 @@
-{"openapi":"3.0.0","info":{"title":"GoalApp API","version":"1.0.0","description":"API for managing user goals and authentication"},"servers":[{"url":"http://localhost:5000"}],"components":{"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"}},"schemas":{"Goal":{"type":"object","required":["user","text"],"properties":{"_id":{"type":"string","description":"The mongodb auto-generated id of the goal"},"user":{"type":"string","description":"The id of the user who created the goal"},"text":{"type":"string","description":"The goal content"},"createdAt":{"type":"string","format":"date-time"},"updatedAt":{"type":"string","format":"date-time"}},"example":{"_id":"60f7c0d8b123456789abcdef","user":"60f7c0d8b123456789abcdea","text":"Learn Swagger","createdAt":"2025-07-22T10:00:00.000Z","updatedAt":"2025-07-22T10:00:00.000Z"}},"User":{"type":"object","required":["name","email"],"properties":{"_id":{"type":"string","description":"The MongoDB auto-generated ID of the user"},"name":{"type":"string","description":"The user's full name"},"email":{"type":"string","format":"email","description":"The user's email address"},"createdAt":{"type":"string","format":"date-time","description":"When the user was created"},"updatedAt":{"type":"string","format":"date-time","description":"When the user was last updated"}},"example":{"_id":"60f7c0d8b123456789abcdef","name":"Teo","email":"teo@example.com","createdAt":"2025-07-22T10:00:00.000Z","updatedAt":"2025-07-22T10:00:00.000Z"}}}},"security":[{"bearerAuth":[]}],"paths":{"/api/auth/google":{"get":{"summary":"Start Google OAuth login process","tags":["Auth"],"responses":{"302":{"description":"Redirects to Google login page"}}}},"/api/auth/google/callback":{"get":{"summary":"Google OAuth callback URL","tags":["Auth"],"responses":{"200":{"description":"Google login successful, returns JWT token and user info","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":"Google login successful"},"token":{"type":"string","example":"the returned jwt token"},"user":{"type":"object","properties":{"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"john@example.com"}}}}}}}},"401":{"description":"Unauthorized - Google login failed"}}}},"/api/goals":{"get":{"summary":"Get all goals of the logged-in user","tags":["Goals"],"security":[{"bearerAuth":[]}],"responses":{"200":{"description":"A list of user goals"},"401":{"description":"Unauthorized"}}},"post":{"summary":"Create a new goal","tags":["Goals"],"security":[{"bearerAuth":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"text":{"type":"string","example":"Twice a week i will be going to the gym"}}}}}},"responses":{"201":{"description":"Goal created successfully"},"400":{"description":"Bad request"},"401":{"description":"Unauthorized"}}}},"/api/goals/{id}":{"put":{"summary":"Update a goal by ID","tags":["Goals"],"security":[{"bearerAuth":[]}],"parameters":[{"in":"path","name":"id","schema":{"type":"string"},"required":true,"description":"The goal ID"}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"text":{"type":"string","example":"Updated goal text"}}}}}},"responses":{"200":{"description":"Goal updated"},"400":{"description":"Invalid ID or data"},"401":{"description":"Unauthorized"},"404":{"description":"Goal not found"}}},"delete":{"summary":"Delete a goal by ID","tags":["Goals"],"security":[{"bearerAuth":[]}],"parameters":[{"in":"path","name":"id","schema":{"type":"string"},"required":true,"description":"The goal ID"}],"responses":{"200":{"description":"Goal deleted"},"401":{"description":"Unauthorized"},"404":{"description":"Goal not found"}}}},"/api/users":{"post":{"summary":"Register a new user","tags":["Users"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"john@example.com"},"password":{"type":"string","example":"fdshfder5"}}}}}},"responses":{"201":{"description":"User registration successful"},"400":{"description":"Missing required fields or user already exists"}}}},"/api/users/login":{"post":{"summary":"Login a user","tags":["Users"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"email":{"type":"string","example":"john@example.com"},"password":{"type":"string","example":"dgjfggsdde56w46"}}}}}},"responses":{"200":{"description":"User logged in successfully"},"400":{"description":"Missing fields"},"401":{"description":"Invalid credentials"}}}},"/api/users/me":{"get":{"summary":"Get current logged-in user","tags":["Users"],"security":[{"bearerAuth":[]}],"responses":{"200":{"description":"The logged-in user's profile","content":{"application/json":{"schema":{"$ref":"#/components/schemas/User"}}}},"401":{"description":"Unauthorized - missing or invalid token"}}}}},"tags":[{"name":"Auth","description":"Google OAuth endpoints"},{"name":"Goals","description":"Endpoints for managing goals"},{"name":"Users","description":"Endpoints for user registration, login, and logged in profile"}]}
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GoalApp API",
+    "version": "1.0.0",
+    "description": "API for managing user goals and authentication"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Goal": {
+        "type": "object",
+        "required": ["user", "text"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The mongodb auto-generated id of the goal"
+          },
+          "user": {
+            "type": "string",
+            "description": "The id of the user who created the goal"
+          },
+          "text": {
+            "type": "string",
+            "description": "The goal content"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "Whether the goal has been completed",
+            "default": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "_id": "60f7c0d8b123456789abcdef",
+          "user": "60f7c0d8b123456789abcdea",
+          "text": "Learn Swagger",
+          "completed": false,
+          "createdAt": "2025-07-22T10:00:00.000Z",
+          "updatedAt": "2025-07-22T10:00:00.000Z"
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": ["name", "email"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The MongoDB auto-generated ID of the user"
+          },
+          "name": {
+            "type": "string",
+            "description": "The user's full name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address"
+          },
+          "googleID": {
+            "type": "string",
+            "description": "The user's Google OAuth ID (optional, only for Google sign-in users)"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the user was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the user was last updated"
+          }
+        },
+        "example": {
+          "_id": "60f7c0d8b123456789abcdef",
+          "name": "Teo",
+          "email": "teo@example.com",
+          "googleID": "115842906234567890123",
+          "createdAt": "2025-07-22T10:00:00.000Z",
+          "updatedAt": "2025-07-22T10:00:00.000Z"
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message"
+          },
+          "_id": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email"
+          },
+          "token": {
+            "type": "string",
+            "description": "JWT authentication token"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "stack": {
+            "type": "string",
+            "description": "Stack trace (only in development)"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/auth/google": {
+      "get": {
+        "summary": "Start Google OAuth login process",
+        "tags": ["Auth"],
+        "responses": {
+          "302": {
+            "description": "Redirects to Google login page"
+          }
+        }
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "summary": "Google OAuth callback URL",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Google login successful, returns JWT token and user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Google login successful"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "john@example.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Google login failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/goals": {
+      "get": {
+        "summary": "Get all goals of the logged-in user",
+        "tags": ["Goals"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of user goals",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Goal"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new goal",
+        "tags": ["Goals"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "example": "Twice a week i will be going to the gym"
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "Optional field to set initial completion status"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Goal created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Goal"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing text field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/goals/{id}": {
+      "put": {
+        "summary": "Update a goal by ID",
+        "tags": ["Goals"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The goal ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "example": "Updated goal text",
+                    "description": "New goal text"
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Goal completion status"
+                  }
+                },
+                "description": "At least one field (text or completed) must be provided"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Goal updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Goal"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID or missing update fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorized to update this goal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Goal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a goal by ID",
+        "tags": ["Goals"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The goal ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Goal deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Goal successfully deleted."
+                    },
+                    "goal": {
+                      "$ref": "#/components/schemas/Goal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid goal ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorized to delete this goal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Goal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "SecurePass123!",
+                    "description": "Password must meet security requirements"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing fields, invalid password, or user already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "summary": "Login a user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "SecurePass123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/google-login": {
+      "post": {
+        "summary": "Login with Google OAuth",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Google OAuth ID token",
+                    "example": "eyJhbGciOiJSUzI1NiIsImtpZCI..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully with Google",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - token is missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid Google token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found - needs to register first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/google-register": {
+      "post": {
+        "summary": "Register a new user with Google OAuth",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Google OAuth ID token",
+                    "example": "eyJhbGciOiJSUzI1NiIsImtpZCI..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully with Google",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - token is missing or user already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid Google token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "summary": "Get current logged-in user",
+        "tags": ["Users"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The logged-in user's profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Google OAuth endpoints"
+    },
+    {
+      "name": "Goals",
+      "description": "Endpoints for managing user goals"
+    },
+    {
+      "name": "Users",
+      "description": "Endpoints for user registration, login, and profile management"
+    }
+  ]
+}
