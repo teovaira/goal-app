@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNotification } from "../context/useNotification";
@@ -6,6 +6,8 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import axios, { AxiosError } from "axios";
 import useAuth from "../context/useAuth";
 import { handleGoogleSuccess } from "../services/googleAuth";
+import { validateEmail, validatePassword } from "../utils/validation";
+import { API_ENDPOINTS } from "../config/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -34,10 +36,6 @@ const Register = () => {
     let hasError = false;
     setIsLoading(true);
 
-    const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex: RegExp =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
     if (!name.trim()) {
       setError((prev) => ({ ...prev, name: "Name is required." }));
       hasError = true;
@@ -49,7 +47,7 @@ const Register = () => {
     if (!email) {
       setError((prev) => ({ ...prev, email: "Email is required." }));
       hasError = true;
-    } else if (!emailRegex.test(email)) {
+    } else if (!validateEmail(email)) {
       setError((prev) => ({
         ...prev,
         email: "Please enter a valid email address.",
@@ -60,7 +58,7 @@ const Register = () => {
     if (!password) {
       setError((prev) => ({ ...prev, password: "Password is required." }));
       hasError = true;
-    } else if (!passwordRegex.test(password)) {
+    } else if (!validatePassword(password)) {
       setError((prev) => ({
         ...prev,
         password:
@@ -76,7 +74,7 @@ const Register = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/users",
+        API_ENDPOINTS.register,
         {
           name: name.trim(),
           email,
