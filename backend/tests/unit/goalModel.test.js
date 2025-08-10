@@ -1,83 +1,167 @@
+/**
+ * Goal Model Unit Tests
+ * 
+ * Purpose: This file tests our Goal database model to ensure it works correctly.
+ * We test how goals are created, updated, and retrieved from the database.
+ * 
+ * What is being tested:
+ * - Goal creation with default values
+ * - Goal completion status tracking
+ * - Finding goals based on their completion status
+ * 
+ * Why these tests matter:
+ * - They ensure our database model behaves consistently
+ * - They catch bugs before they reach production
+ * - They document how the Goal model should work
+ */
+
 const Goal = require("../../models/goalModel");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
-let mongoServer;
+// This creates a temporary MongoDB instance in memory for testing
+// It's faster than using a real database and doesn't affect production data
+let temporaryDatabase;
 
+// Setup: Create a test database before running any tests
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri);
+  // Create an in-memory MongoDB instance
+  temporaryDatabase = await MongoMemoryServer.create();
+  const testDatabaseUrl = temporaryDatabase.getUri();
+  
+  // Connect to our temporary test database
+  await mongoose.connect(testDatabaseUrl);
 });
 
+// Cleanup: Close connections and stop the test database after all tests
 afterAll(async () => {
   await mongoose.disconnect();
-  await mongoServer.stop();
+  await temporaryDatabase.stop();
 });
 
-describe("Goal Completion Feature", () => {
+describe("Goal Model Database Tests", () => {
+  // Before each test, clear all goals to start fresh
+  // This ensures tests don't interfere with each other
   beforeEach(async () => {
     await Goal.deleteMany({});
   });
 
-  test("should create a goal with completed field defaulting to false", async () => {
-    const goalData = {
-      text: "Test goal",
-      user: new mongoose.Types.ObjectId()
+  /**
+   * Test 1: Default Goal Creation
+   * WHY: When users create a new goal, it should start as incomplete
+   * WHAT: Create a goal and check that 'completed' is false by default
+   * HOW: This ensures new goals aren't accidentally marked as done
+   */
+  test("new goals should be marked as incomplete by default", async () => {
+    // Create test data for a new goal
+    const newGoalData = {
+      text: "Learn JavaScript testing",
+      user: new mongoose.Types.ObjectId() // Generate a fake user ID
     };
 
-    const goal = await Goal.create(goalData);
+    // Create the goal in the database
+    const createdGoal = await Goal.create(newGoalData);
 
-    expect(goal.completed).toBe(false);
-    expect(goal.text).toBe("Test goal");
+    // Verify the goal was created correctly
+    expect(createdGoal.completed).toBe(false); // Should be incomplete by default
+    expect(createdGoal.text).toBe("Learn JavaScript testing");
   });
 
-  test("should create a goal with completed set to true", async () => {
-    const goalData = {
-      text: "Test completed goal",
+  /**
+   * Test 2: Creating Completed Goals
+   * WHY: Sometimes we need to create goals that are already completed (e.g., importing data)
+   * WHAT: Create a goal with completed=true and verify it's saved correctly
+   * HOW: This allows flexibility in goal creation for different use cases
+   */
+  test("should allow creating goals that are already completed", async () => {
+    // Create a goal that's already marked as complete
+    const completedGoalData = {
+      text: "Finish backend setup",
       user: new mongoose.Types.ObjectId(),
-      completed: true
+      completed: true // Explicitly set as completed
     };
 
-    const goal = await Goal.create(goalData);
+    // Save to database
+    const completedGoal = await Goal.create(completedGoalData);
 
-    expect(goal.completed).toBe(true);
-    expect(goal.text).toBe("Test completed goal");
+    // Verify it was saved as completed
+    expect(completedGoal.completed).toBe(true);
+    expect(completedGoal.text).toBe("Finish backend setup");
   });
 
-  test("should update goal completion status", async () => {
-    const goalData = {
-      text: "Goal to complete",
+  /**
+   * Test 3: Updating Goal Completion Status
+   * WHY: Users need to mark goals as complete when they achieve them
+   * WHAT: Create an incomplete goal, update it to complete, and verify the change persists
+   * HOW: This simulates the user checking off a goal in the app
+   */
+  test("should update a goal from incomplete to complete", async () => {
+    // Step 1: Create an incomplete goal
+    const incompleteGoalData = {
+      text: "Read documentation",
       user: new mongoose.Types.ObjectId(),
       completed: false
     };
 
-    const goal = await Goal.create(goalData);
-    expect(goal.completed).toBe(false);
+    const originalGoal = await Goal.create(incompleteGoalData);
+    expect(originalGoal.completed).toBe(false); // Verify it starts incomplete
 
-    goal.completed = true;
-    await goal.save();
+    // Step 2: Mark the goal as complete
+    originalGoal.completed = true;
+    await originalGoal.save();
 
-    const updatedGoal = await Goal.findById(goal._id);
-    expect(updatedGoal.completed).toBe(true);
+    // Step 3: Fetch the goal again to ensure the change was saved
+    const updatedGoalFromDatabase = await Goal.findById(originalGoal._id);
+    expect(updatedGoalFromDatabase.completed).toBe(true);
   });
 
-  test("should find all completed goals", async () => {
-    const userId = new mongoose.Types.ObjectId();
+  /**
+   * Test 4: Filtering Goals by Completion Status
+   * WHY: Users want to see their completed goals separately from incomplete ones
+   * WHAT: Create multiple goals and filter them by completion status
+   * HOW: This tests the queries we'll use to show different goal lists in the UI
+   */
+  test("should correctly filter goals by completion status", async () => {
+    // Create a test user ID (same for all goals)
+    const testUserId = new mongoose.Types.ObjectId();
     
-    await Goal.create([
-      { text: "Goal 1", user: userId, completed: true },
-      { text: "Goal 2", user: userId, completed: false },
-      { text: "Goal 3", user: userId, completed: true },
-      { text: "Goal 4", user: userId, completed: false }
-    ]);
+    // Create a mix of completed and incomplete goals
+    const testGoals = [
+      { text: "Completed Goal 1", user: testUserId, completed: true },
+      { text: "Incomplete Goal 1", user: testUserId, completed: false },
+      { text: "Completed Goal 2", user: testUserId, completed: true },
+      { text: "Incomplete Goal 2", user: testUserId, completed: false }
+    ];
 
-    const completedGoals = await Goal.find({ user: userId, completed: true });
-    const incompleteGoals = await Goal.find({ user: userId, completed: false });
+    // Save all goals to database at once
+    await Goal.create(testGoals);
 
-    expect(completedGoals.length).toBe(2);
-    expect(incompleteGoals.length).toBe(2);
-    expect(completedGoals.every(goal => goal.completed)).toBe(true);
-    expect(incompleteGoals.every(goal => !goal.completed)).toBe(true);
+    // Query for completed goals only
+    const completedGoalsFromDatabase = await Goal.find({ 
+      user: testUserId, 
+      completed: true 
+    });
+    
+    // Query for incomplete goals only
+    const incompleteGoalsFromDatabase = await Goal.find({ 
+      user: testUserId, 
+      completed: false 
+    });
+
+    // Verify we got the right number of each type
+    expect(completedGoalsFromDatabase.length).toBe(2);
+    expect(incompleteGoalsFromDatabase.length).toBe(2);
+    
+    // Double-check that all completed goals are actually marked as complete
+    const allCompletedGoalsAreComplete = completedGoalsFromDatabase.every(
+      goal => goal.completed === true
+    );
+    expect(allCompletedGoalsAreComplete).toBe(true);
+    
+    // Double-check that all incomplete goals are actually marked as incomplete
+    const allIncompleteGoalsAreIncomplete = incompleteGoalsFromDatabase.every(
+      goal => goal.completed === false
+    );
+    expect(allIncompleteGoalsAreIncomplete).toBe(true);
   });
 });
