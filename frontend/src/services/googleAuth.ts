@@ -1,6 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { CredentialResponse } from '@react-oauth/google';
 import { NavigateFunction } from 'react-router-dom';
+import { authStorage } from '../utils/authStorage';
+import { API_ENDPOINTS } from '../config/api';
 
 interface GoogleAuthResponse {
   token: string;
@@ -14,9 +16,9 @@ export const authenticateWithGoogle = async (
   isRegistration: boolean = false
 ): Promise<GoogleAuthResponse> => {
   try {
-    const endpoint = isRegistration ? '/api/users/google-register' : '/api/users/google-login';
+    const endpoint = isRegistration ? API_ENDPOINTS.googleRegister : API_ENDPOINTS.googleLogin;
     
-    const response = await axios.post(`http://localhost:5000${endpoint}`, {
+    const response = await axios.post(endpoint, {
       token: credentialResponse.credential,
     });
 
@@ -37,14 +39,13 @@ export const handleGoogleSuccess = async (
   try {
     const authData = await authenticateWithGoogle(credentialResponse, isRegistration);
     
-    // Store token and user data in localStorage
-    localStorage.setItem('authToken', authData.token);
+    // Store token and user data
     const userData = {
       _id: authData._id,
       name: authData.name,
       email: authData.email,
     };
-    localStorage.setItem('userData', JSON.stringify(userData));
+    authStorage.setAuthData(authData.token, userData);
     
     // Show success notification if provided
     if (showNotification) {

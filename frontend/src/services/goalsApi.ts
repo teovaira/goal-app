@@ -1,21 +1,17 @@
 import axios from "axios";
 import { Goal } from "../types/goal";
-
-const API_URL = "http://localhost:5000/api/goals";
-
-const getAuthToken = (): string | null => {
-  return localStorage.getItem("authToken");
-};
+import { authStorage } from "../utils/authStorage";
+import { API_ENDPOINTS } from "../config/api";
 
 const getAuthHeaders = () => {
-  const token = getAuthToken();
+  const token = authStorage.getAuthToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 export const goalsApi = {
   async getAllGoals(): Promise<Goal[]> {
     try {
-      const response = await axios.get(API_URL, {
+      const response = await axios.get(API_ENDPOINTS.goals, {
         headers: getAuthHeaders(),
       });
       return response.data;
@@ -30,7 +26,7 @@ export const goalsApi = {
   async createGoal(goalText: string): Promise<Goal> {
     try {
       const response = await axios.post(
-        API_URL,
+        API_ENDPOINTS.goals,
         { text: goalText },
         { headers: getAuthHeaders() }
       );
@@ -46,7 +42,7 @@ export const goalsApi = {
   async updateGoal(goalId: string, updates: { text?: string; completed?: boolean }): Promise<Goal> {
     try {
       const response = await axios.put(
-        `${API_URL}/${goalId}`,
+        `${API_ENDPOINTS.goals}/${goalId}`,
         updates,
         { headers: getAuthHeaders() }
       );
@@ -61,7 +57,7 @@ export const goalsApi = {
 
   async deleteGoal(goalId: string): Promise<void> {
     try {
-      await axios.delete(`${API_URL}/${goalId}`, {
+      await axios.delete(`${API_ENDPOINTS.goals}/${goalId}`, {
         headers: getAuthHeaders(),
       });
     } catch (error) {
