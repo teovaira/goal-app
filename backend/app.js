@@ -9,6 +9,7 @@ const app = express();
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./docs/swagger");
+const rfs = require("rotating-file-stream");
 
 const errorHandler = require("./middlewares/errorMiddleware");
 const notFound = require("./middlewares/notFoundRouteMiddleware");
@@ -52,21 +53,18 @@ if (!fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory);
 }
 
-const accessLogStream = fs.createWriteStream(
-  path.join(logDirectory, "access.log"),
-  { flags: "a" }
-);
+const accessLogStream = rfs.createStream("access.log", {
+  interval: "1d",
+  path: logDirectory,
+  maxFiles: 14,
+  compress: "gzip"
+});
 
 app.use(morgan("combined", { stream: accessLogStream }));
 
-app.use(
-  morgan("dev", {
-    skip: (req, res) => res.statusCode < 400,
-    stream: {
-      write: (message) => logger.error(message.trim()),
-    },
-  })
-);
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
 
 app.get("/", (req, res) => {
   res.send("Welcome to GoalApp API");
