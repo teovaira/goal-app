@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import  useAuth from "../context/useAuth";
@@ -6,6 +6,9 @@ import { useNotification } from "../context/useNotification";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import axios, { AxiosError } from "axios";
 import { handleGoogleSuccess } from "../services/googleAuth";
+import { validateEmail, validatePassword } from "../utils/validation";
+import { authStorage } from "../utils/authStorage";
+import { API_ENDPOINTS } from "../config/api";
 
 const Login = () => {
 
@@ -32,14 +35,10 @@ const Login = () => {
     let hasError = false;
     setIsLoading(true);
 
-    const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex: RegExp =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
     if (!email) {
       setError((prev) => ({ ...prev, email: "Email is required." }));
       hasError = true;
-    } else if (!emailRegex.test(email)) {
+    } else if (!validateEmail(email)) {
       setError((prev) => ({
         ...prev,
         email: "Please enter a valid email address.",
@@ -50,7 +49,7 @@ const Login = () => {
     if (!password) {
       setError((prev) => ({ ...prev, password: "Password is required." }));
       hasError = true;
-    } else if (!passwordRegex.test(password)) {
+    } else if (!validatePassword(password)) {
       setError((prev) => ({
         ...prev,
         password:
@@ -67,7 +66,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/users/login",
+        API_ENDPOINTS.login,
         {
           email,
           password,
@@ -75,10 +74,8 @@ const Login = () => {
       );
 
       const { token, _id, name, email: userEmail } = response.data;
-      localStorage.setItem("authToken", token);
-      
       const userData = { _id, name, email: userEmail };
-      localStorage.setItem("userData", JSON.stringify(userData));
+      authStorage.setAuthData(token, userData);
 
       showNotification("Welcome back! Login successful.");
       login(navigate);
