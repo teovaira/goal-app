@@ -131,9 +131,9 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
+    <main className="flex justify-center items-center h-screen bg-gray-200">
       <div className="text-center p-6 bg-white rounded-lg shadow-lg max-w-lg w-full">
-        <h2 className="text-3xl font-semibold">Register</h2>
+        <h1 className="text-3xl font-semibold">Register</h1>
         <p className="mt-4 mb-6">Create your account to get started.</p>
 
         {successMessage && (
@@ -158,9 +158,11 @@ const Register = () => {
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your full name"
+              aria-invalid={!!error.name}
+              aria-describedby={error.name ? "name-error" : undefined}
             />
             {error.name && (
-              <p className="text-red-500 text-sm">{error.name}</p>
+              <p id="name-error" className="text-red-500 text-sm" role="alert">{error.name}</p>
             )}
           </div>
 
@@ -179,9 +181,11 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your email"
+              aria-invalid={!!error.email}
+              aria-describedby={error.email ? "email-error" : undefined}
             />
             {error.email && (
-              <p className="text-red-500 text-sm">{error.email}</p>
+              <p id="email-error" className="text-red-500 text-sm" role="alert">{error.email}</p>
             )}
           </div>
 
@@ -201,11 +205,14 @@ const Register = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Your password"
+                aria-invalid={!!error.password}
+                aria-describedby={error.password ? "password-error" : undefined}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
                   <EyeSlashIcon className="h-5 w-5 text-gray-500" />
@@ -215,7 +222,7 @@ const Register = () => {
               </button>
             </div>
             {error.password && (
-              <p className="text-red-500 text-sm">{error.password}</p>
+              <p id="password-error" className="text-red-500 text-sm" role="alert">{error.password}</p>
             )}
           </div>
 
@@ -275,7 +282,7 @@ const Register = () => {
           </Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 };
 

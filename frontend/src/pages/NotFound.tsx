@@ -6,7 +6,7 @@ const NotFound = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
         <h1 className="text-9xl font-bold text-gray-300">404</h1>
         <h2 className="text-4xl font-bold text-gray-800 mt-4">
@@ -38,7 +38,7 @@ const NotFound = () => {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

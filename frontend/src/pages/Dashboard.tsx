@@ -132,7 +132,7 @@ const Dashboard = () => {
   const filteredTotalCount = filteredGoals.length;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <main className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex justify-between items-center">
@@ -209,8 +209,12 @@ const Dashboard = () => {
             <h3 className="text-lg font-medium text-gray-900 mb-3">Create New Goal</h3>
             <form onSubmit={handleCreateGoal}>
               <div className="flex gap-3">
+                <label htmlFor="new-goal-input" className="sr-only">
+                  Enter your goal
+                </label>
                 <input
                   type="text"
+                  id="new-goal-input"
                   value={newGoalText}
                   onChange={(e) => setNewGoalText(e.target.value)}
                   placeholder="Enter your goal..."
@@ -267,8 +271,12 @@ const Dashboard = () => {
                           e.preventDefault();
                           handleUpdateGoal(goal._id, editedText);
                         }} className="w-full">
+                          <label htmlFor={`edit-goal-${goal._id}`} className="sr-only">
+                            Edit goal text
+                          </label>
                           <input
                             type="text"
+                            id={`edit-goal-${goal._id}`}
                             value={editedText}
                             onChange={(e) => setEditedText(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -354,7 +362,7 @@ const Dashboard = () => {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
