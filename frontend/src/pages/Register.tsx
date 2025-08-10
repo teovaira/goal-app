@@ -232,7 +232,7 @@ const Register = () => {
             className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative disabled:opacity-50"
           >
             {isLoading ? (
-              <div className="spinner visible absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+              <div className="spinner visible absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" role="status" aria-label="Loading"></div>
             ) : (
               "Register"
             )}
@@ -275,7 +275,7 @@ const Register = () => {
           </div>
         </div>
 
-        <p className="mt-4 text-gray-600">
+        <p className="mt-4 text-gray-700">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600 hover:underline">
             Login here

@@ -140,7 +140,7 @@ const Dashboard = () => {
               <h1 className="text-3xl font-bold text-gray-900">
                 Welcome to Dashboard!
               </h1>
-              <p className="text-gray-600 mt-1">goal management system</p>
+              <p className="text-gray-700 mt-1">goal management system</p>
             </div>
             <button
               onClick={handleLogout}
@@ -157,7 +157,7 @@ const Dashboard = () => {
             <div>
               <h2 className="text-xl font-semibold text-gray-900">Your Goals</h2>
               {totalGoalsCount > 0 && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-700 mt-1">
                   {filter === 'all' ? (
                     <>
                       {completedGoalsCount} of {totalGoalsCount} completed
@@ -234,7 +234,7 @@ const Dashboard = () => {
           
           {isLoading && (
             <div className="flex items-center justify-center py-8">
-              <div className="text-gray-600">Loading your goals...</div>
+              <div className="text-gray-700">Loading your goals...</div>
             </div>
           )}
           
@@ -249,7 +249,7 @@ const Dashboard = () => {
           {!isLoading && !error && goals.length > 0 && (
             <div className="space-y-3">
               {filteredGoals.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-700">
                   <p className="text-lg font-medium mb-2">
                     No {filter === 'all' ? '' : filter} goals found
                   </p>
@@ -304,15 +304,17 @@ const Dashboard = () => {
                           <div className="flex items-start gap-3">
                             <input
                               type="checkbox"
+                              id={`goal-checkbox-${goal._id}`}
                               checked={goal.completed}
                               onChange={() => handleToggleComplete(goal._id, goal.completed)}
                               className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                              aria-label={`Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`}
                             />
                             <div className="flex-1">
                               <p className={`text-gray-800 font-medium ${goal.completed ? 'line-through text-gray-500' : ''}`}>
                                 {goal.text}
                               </p>
-                              <div className="mt-1 text-sm text-gray-500">
+                              <div className="mt-1 text-sm text-gray-700">
                                 Created: {new Date(goal.createdAt).toLocaleDateString()}
                                 {goal.completed && (
                                   <span className="ml-2 text-green-600">✓ Completed</span>
@@ -354,7 +356,7 @@ const Dashboard = () => {
           
           {!isLoading && !error && goals.length === 0 && (
             <div className="text-center py-8">
-              <div className="text-gray-500">
+              <div className="text-gray-700">
                 <p className="text-lg font-medium mb-2">No goals yet!</p>
                 <p>Use the form above to create your first goal and start tracking your progress.</p>
               </div>

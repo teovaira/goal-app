@@ -195,7 +195,7 @@ const Login = () => {
             className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative"
           >
             {isLoading ? (
-              <div className="spinner visible absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+              <div className="spinner visible absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" role="status" aria-label="Loading"></div>
             ) : (
               "Login"
             )}
@@ -238,7 +238,7 @@ const Login = () => {
           </div>
         </div>
 
-        <p className="mt-4 text-gray-600">
+        <p className="mt-4 text-gray-700">
           Don't have an account?{" "}
           <Link to="/register" className="text-blue-600 hover:underline">
             Register here

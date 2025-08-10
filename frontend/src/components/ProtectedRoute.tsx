@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="spinner visible"></div> 
+        <div className="spinner visible" role="status" aria-label="Loading"></div>
       </div>
     );
   }

@@ -12,7 +12,7 @@ const NotFound = () => {
         <h2 className="text-4xl font-bold text-gray-800 mt-4">
           Page Not Found
         </h2>
-        <p className="text-gray-600 mt-4 text-lg">
+        <p className="text-gray-700 mt-4 text-lg">
           Oops! The page you're looking for doesn't exist or has been moved.
         </p>
         
@@ -33,7 +33,7 @@ const NotFound = () => {
         </div>
         
         <div className="mt-12">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-700 text-sm">
             Need help? Contact support or check our FAQ.
           </p>
         </div>

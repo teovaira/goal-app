@@ -61,7 +61,12 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div className={`fixed top-4 right-4 z-50 animate-slide-in`}>
-      <div className={`relative overflow-hidden ${getBackgroundColor()} text-white rounded-lg shadow-2xl flex items-center min-w-[320px] max-w-md`}>
+      <div
+        className={`relative overflow-hidden ${getBackgroundColor()} text-white rounded-lg shadow-2xl flex items-center min-w-[320px] max-w-md`}
+        role="alert"
+        aria-live={type === "error" ? "assertive" : "polite"}
+        aria-atomic="true"
+      >
         <div className="absolute top-0 left-0 h-full w-1 bg-white opacity-20"></div>
         <div className="flex items-center px-6 py-4 space-x-3 w-full">
           <div className="flex-shrink-0 bg-white bg-opacity-20 rounded-full p-2">
@@ -73,6 +78,7 @@ const Toast: React.FC<ToastProps> = ({
           <button
             onClick={onClose}
             className="flex-shrink-0 ml-4 hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-all duration-200"
+            aria-label="Close notification"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

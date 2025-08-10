@@ -70,6 +70,7 @@ const Navbar = () => {
               onClick={toggleMobileMenu}
               className="text-gray-400 hover:text-white focus:outline-none focus:text-white"
               aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
             >
               {!isMobileMenuOpen ? (
                 <svg
