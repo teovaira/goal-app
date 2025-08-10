@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const logger = require("../config/logger");
+const { sanitizeToken } = require("../utils/logSanitizer");
 
 const verifyToken = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -14,11 +15,11 @@ const verifyToken = asyncHandler(async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  logger.debug(`Received token: ${token}`);
+  logger.debug(`Received token: ${sanitizeToken(token)}`);
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    logger.debug(`Decoded token: ${JSON.stringify(decoded)}`);
+    logger.debug(`Token verified for user ID: ${decoded.id}`);
 
     const user = await User.findById(decoded.id).select("-password");
 
