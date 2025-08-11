@@ -17,27 +17,9 @@
 
 const Goal = require("../../models/goalModel");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 
-// This creates a temporary MongoDB instance in memory for testing
-// It's faster than using a real database and doesn't affect production data
-let temporaryDatabase;
-
-// Setup: Create a test database before running any tests
-beforeAll(async () => {
-  // Create an in-memory MongoDB instance
-  temporaryDatabase = await MongoMemoryServer.create();
-  const testDatabaseUrl = temporaryDatabase.getUri();
-  
-  // Connect to our temporary test database
-  await mongoose.connect(testDatabaseUrl);
-});
-
-// Cleanup: Close connections and stop the test database after all tests
-afterAll(async () => {
-  await mongoose.disconnect();
-  await temporaryDatabase.stop();
-});
+// Note: MongoDB connection is handled by the global setup.js file
+// No need to create connections in individual test files
 
 describe("Goal Model Database Tests", () => {
   // Before each test, clear all goals to start fresh
