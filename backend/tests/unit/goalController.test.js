@@ -29,26 +29,10 @@ const app = require("../../app");
 const Goal = require("../../models/goalModel");
 const User = require("../../models/userModel");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 const jwt = require("jsonwebtoken");
 
-// Test database setup
-let testDatabase;
-
-// This runs once before ALL tests
-beforeAll(async () => {
-  // Create temporary test database
-  testDatabase = await MongoMemoryServer.create();
-  const databaseUrl = testDatabase.getUri();
-  await mongoose.connect(databaseUrl);
-  process.env.JWT_SECRET = "test-secret-key";
-});
-
-// This runs once after ALL tests
-afterAll(async () => {
-  await mongoose.disconnect();
-  await testDatabase.stop();
-});
+// Note: MongoDB connection is handled by the global setup.js file
+// No need to create connections in individual test files
 
 // Main test suite
 describe("Goal Controller - Complete API Tests", () => {
