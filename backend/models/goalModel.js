@@ -47,6 +47,7 @@ const goalSchema = new mongoose.Schema(
     text: {
       type: String,
       required: [true, "Please add a text value"],
+      maxlength: [1000, "Goal text cannot exceed 1000 characters"],
     },
     completed: {
       type: Boolean,
