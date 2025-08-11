@@ -15,6 +15,13 @@ const verifyToken = asyncHandler(async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
+  
+  if (!token || token === "" || token === "undefined" || token === "null") {
+    logger.warn("Token is empty or invalid");
+    res.status(401);
+    throw new Error("Not authorized, token failed.");
+  }
+  
   logger.debug(`Received token: ${sanitizeToken(token)}`);
 
   try {
@@ -35,7 +42,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
   } catch (error) {
     logger.error(`Token verification failed: ${error.message}`);
     res.status(401);
-    throw new Error("Not authorized, token invalid or expired");
+    throw new Error("Not authorized, token failed.");
   }
 });
 
