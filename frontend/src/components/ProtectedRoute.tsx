@@ -5,7 +5,7 @@ import { authStorage } from "../utils/authStorage";
 
 interface ProtectedRouteProps {
   children: ReactNode;
-}
+};
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isLoading } = useAuth(); 
