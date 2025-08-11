@@ -42,24 +42,35 @@ const registerUser = asyncHandler(async (req, res) => {
   const SaltOrRounds = 10;
   const hashedPassword = await bcrypt.hash(password, SaltOrRounds);
 
-  const newUser = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
-
-  if (newUser) {
-    logger.info(`User with id: ${newUser._id} registered successfully`);
-    res.status(201).json({
-      _id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      token: generateToken(newUser._id)
+  try {
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
     });
-  } else {
-    logger.error("Registration failed: Invalid user data");
-    res.status(400);
-    throw new Error("Invalid user data");
+
+    if (newUser) {
+      logger.info(`User with id: ${newUser._id} registered successfully`);
+      res.status(201).json({
+        token: generateToken(newUser._id),
+        user: {
+          _id: newUser.id,
+          name: newUser.name,
+          email: newUser.email
+        }
+      });
+    } else {
+      logger.error("Registration failed: Invalid user data");
+      res.status(400);
+      throw new Error("Invalid user data");
+    }
+  } catch (error) {
+    if (error.name === 'ValidationError' && error.errors && error.errors.email) {
+      logger.warn(`Registration failed: ${error.message}`);
+      res.status(400);
+      throw new Error("Please provide a valid email address");
+    }
+    throw error;
   }
 });
 
@@ -85,17 +96,19 @@ const loginUser = asyncHandler( async (req, res) => {
  if (!user || !(await bcrypt.compare(password, user.password))) {
   logger.error(`Login failed: Invalid credentials`);
   res.status(401);
-  throw new Error("Invalid credentials");
+  throw new Error("Invalid email or password");
  }
 
  logger.info(`User with id: ${user._id} logged in successfully`);
 
  res.status(200).json({
   message: "User logged in successfully",
-  _id: user.id,
-  name: user.name,
-  email: user.email,
-  token: generateToken(user.id)
+  token: generateToken(user.id),
+  user: {
+    _id: user.id,
+    name: user.name,
+    email: user.email
+  }
  });
 
 
@@ -120,8 +133,8 @@ const googleLogin = asyncHandler(async (req, res) => {
   
   const { token } = req.body;
   
-  if (!token) {
-    logger.warn("Google login failed: Token is missing");
+  if (!token || typeof token !== 'string') {
+    logger.warn("Google login failed: Token is missing or invalid");
     res.status(400);
     throw new Error("Google token is required");
   }
@@ -151,13 +164,20 @@ const googleLogin = asyncHandler(async (req, res) => {
     
     res.status(200).json({
       message: "User logged in successfully",
-      _id: user.id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user.id)
+      token: generateToken(user.id),
+      user: {
+        _id: user.id,
+        name: user.name,
+        email: user.email
+      }
     });
     
   } catch (error) {
+    // If it's our custom "User not found" error, preserve the 404 status
+    if (error.message === "User not found. Please register first." && res.statusCode === 404) {
+      throw error;
+    }
+    
     logger.error(`Google login failed: ${error.message}`);
     res.status(401);
     throw new Error("Invalid Google token");
@@ -169,8 +189,8 @@ const googleRegister = asyncHandler(async (req, res) => {
   
   const { token } = req.body;
   
-  if (!token) {
-    logger.warn("Google registration failed: Token is missing");
+  if (!token || typeof token !== 'string') {
+    logger.warn("Google registration failed: Token is missing or invalid");
     res.status(400);
     throw new Error("Google token is required");
   }
@@ -207,10 +227,12 @@ const googleRegister = asyncHandler(async (req, res) => {
     if (newUser) {
       logger.info(`User with id: ${newUser._id} registered successfully via Google`);
       res.status(201).json({
-        _id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        token: generateToken(newUser._id)
+        token: generateToken(newUser._id),
+        user: {
+          _id: newUser.id,
+          name: newUser.name,
+          email: newUser.email
+        }
       });
     } else {
       logger.error("Google registration failed: Unable to create user");
@@ -219,6 +241,12 @@ const googleRegister = asyncHandler(async (req, res) => {
     }
     
   } catch (error) {
+    // If it's our custom error, preserve the status code
+    if ((error.message === "User already exists" && res.statusCode === 400) ||
+        (error.message === "Failed to create user" && res.statusCode === 400)) {
+      throw error;
+    }
+    
     logger.error(`Google registration failed: ${error.message}`);
     res.status(401);
     throw new Error("Invalid Google token");
