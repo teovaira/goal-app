@@ -27,21 +27,14 @@ const authMiddleware = require("../../middlewares/authMiddleware");
 const User = require("../../models/userModel");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 
-// Test database setup (in-memory, not real database)
-let testDatabase;
+// Note: MongoDB connection is handled by the global setup.js file
+// No need to create connections in individual test files
 let testApp; // Our test Express app
 
 // This runs once before ALL tests
 beforeAll(async () => {
-  // Create a temporary test database in memory
-  testDatabase = await MongoMemoryServer.create();
-  const databaseUrl = testDatabase.getUri();
-  await mongoose.connect(databaseUrl);
-  
-  // Set a test JWT secret (in real app, this comes from .env)
-  process.env.JWT_SECRET = "test-secret-key";
+  // JWT secret is already set in .env.test file
 
   // Create a simple test app with one protected route
   testApp = express();
@@ -58,16 +51,12 @@ beforeAll(async () => {
   
   // Error handler for our test app
   testApp.use((error, req, res, next) => {
-    res.status(error.statusCode || 500).json({ 
-      message: error.message || "Something went wrong" 
+    // Check if status was already set by middleware
+    const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+    res.status(statusCode).json({
+      message: error.message || "Something went wrong"
     });
   });
-});
-
-// This runs once after ALL tests
-afterAll(async () => {
-  await mongoose.disconnect();
-  await testDatabase.stop();
 });
 
 // Main test group
