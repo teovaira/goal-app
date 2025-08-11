@@ -2,16 +2,14 @@ const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const dotenv = require("dotenv");
 
-dotenv.config({ path: ".env.test" }); 
+dotenv.config({ path: ".env.test" });
 let mongo;
 
 beforeAll(async () => {
-  mongo = await MongoMemoryServer.create(); 
-  const uri = mongo.getUri(); 
-  await mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
+  mongo = await MongoMemoryServer.create();
+  const uri = mongo.getUri();
+  // Remove deprecated options - they're no longer needed in MongoDB driver v4+
+  await mongoose.connect(uri);
 });
 
 beforeEach(async () => {
