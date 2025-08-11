@@ -3,21 +3,9 @@ const app = require("../../app");
 const User = require("../../models/userModel");
 const Goal = require("../../models/goalModel");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 
-let mongoServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri);
-  process.env.JWT_SECRET = "test-secret";
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
+// Note: MongoDB connection is handled by the global setup.js file
+// No need to create connections in individual test files
 
 describe("API Integration Tests", () => {
   beforeEach(async () => {
@@ -35,7 +23,7 @@ describe("API Integration Tests", () => {
 
       // Step 1: Register
       const registerRes = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(userData)
         .expect(201);
 
@@ -46,7 +34,7 @@ describe("API Integration Tests", () => {
 
       // Step 2: Get Profile
       const profileRes = await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${authToken}`)
         .expect(200);
 
@@ -119,12 +107,12 @@ describe("API Integration Tests", () => {
       };
 
       const user1Res = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(user1Data)
         .expect(201);
 
       const user2Res = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(user2Data)
         .expect(201);
 
@@ -181,7 +169,7 @@ describe("API Integration Tests", () => {
 
       // Register and get token
       const registerRes = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(userData)
         .expect(201);
 
@@ -189,7 +177,7 @@ describe("API Integration Tests", () => {
 
       // Use token successfully
       await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${oldToken}`)
         .expect(200);
 
@@ -206,12 +194,12 @@ describe("API Integration Tests", () => {
 
       // Both tokens should work
       await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${oldToken}`)
         .expect(200);
 
       await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${newToken}`)
         .expect(200);
     });
@@ -226,7 +214,7 @@ describe("API Integration Tests", () => {
       };
 
       const registerRes = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(userData)
         .expect(201);
 
@@ -266,7 +254,7 @@ describe("API Integration Tests", () => {
       };
 
       const registerRes = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(userData)
         .expect(201);
 
