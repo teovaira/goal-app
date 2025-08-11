@@ -25,27 +25,11 @@ const request = require("supertest");
 const app = require("../../app");
 const User = require("../../models/userModel");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// Test database setup
-let testDatabase;
-
-// This runs once before ALL tests
-beforeAll(async () => {
-  // Create temporary test database
-  testDatabase = await MongoMemoryServer.create();
-  const databaseUrl = testDatabase.getUri();
-  await mongoose.connect(databaseUrl);
-  process.env.JWT_SECRET = "test-secret-key";
-});
-
-// This runs once after ALL tests
-afterAll(async () => {
-  await mongoose.disconnect();
-  await testDatabase.stop();
-});
+// Note: MongoDB connection is handled by the global setup.js file
+// No need to create connections in individual test files
 
 // Main test suite
 describe("User Controller - All User Features", () => {
@@ -73,7 +57,7 @@ describe("User Controller - All User Features", () => {
       const userData = createValidUserData();
 
       const response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(userData)
         .expect(201); // 201 = Created
 
@@ -111,7 +95,7 @@ describe("User Controller - All User Features", () => {
       };
 
       const response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(duplicateUser)
         .expect(400); // 400 = Bad Request
 
@@ -122,7 +106,7 @@ describe("User Controller - All User Features", () => {
       // Test missing name
       const noName = { email: "test@example.com", password: "Pass123!@#" };
       let response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(noName)
         .expect(400);
       expect(response.body.message).toContain("Please add all fields");
@@ -130,7 +114,7 @@ describe("User Controller - All User Features", () => {
       // Test missing email
       const noEmail = { name: "Test", password: "Pass123!@#" };
       response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(noEmail)
         .expect(400);
       expect(response.body.message).toContain("Please add all fields");
@@ -138,7 +122,7 @@ describe("User Controller - All User Features", () => {
       // Test missing password
       const noPassword = { name: "Test", email: "test@example.com" };
       response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(noPassword)
         .expect(400);
       expect(response.body.message).toContain("Please add all fields");
@@ -161,7 +145,7 @@ describe("User Controller - All User Features", () => {
         };
 
         const response = await request(app)
-          .post("/api/users/register")
+          .post("/api/users")
           .send(userData)
           .expect(400);
 
@@ -187,7 +171,7 @@ describe("User Controller - All User Features", () => {
         };
 
         const response = await request(app)
-          .post("/api/users/register")
+          .post("/api/users")
           .send(userData)
           .expect(400);
 
@@ -216,7 +200,7 @@ describe("User Controller - All User Features", () => {
         };
 
         const response = await request(app)
-          .post("/api/users/register")
+          .post("/api/users")
           .send(userData)
           .expect(201);
 
@@ -341,7 +325,7 @@ describe("User Controller - All User Features", () => {
 
     test("✅ Should get profile with valid token", async () => {
       const response = await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${authToken}`) // Send token in header
         .expect(200);
 
@@ -354,7 +338,7 @@ describe("User Controller - All User Features", () => {
 
     test("❌ Should not get profile without token", async () => {
       const response = await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         // No Authorization header!
         .expect(401);
 
@@ -363,7 +347,7 @@ describe("User Controller - All User Features", () => {
 
     test("❌ Should not get profile with invalid token", async () => {
       const response = await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", "Bearer invalid-token-here")
         .expect(401);
 
@@ -379,24 +363,25 @@ describe("User Controller - All User Features", () => {
       );
 
       const response = await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${expiredToken}`)
         .expect(401);
 
       expect(response.body.message).toContain("Not authorized");
     });
 
-    test("❌ Should return 404 if user was deleted", async () => {
+    test("❌ Should return 401 if user was deleted", async () => {
       // Delete the user
       await User.findByIdAndDelete(userId);
 
       // Try to get profile with valid token
+      // Auth middleware will return 401 when user not found
       const response = await request(app)
-        .get("/api/users/profile")
+        .get("/api/users/me")
         .set("Authorization", `Bearer ${authToken}`)
-        .expect(404); // 404 = Not Found
+        .expect(401); // 401 = Unauthorized (user not found in auth middleware)
 
-      expect(response.body.message).toContain("User not found");
+      expect(response.body.message).toContain("Not authorized");
     });
   });
 
@@ -414,7 +399,7 @@ describe("User Controller - All User Features", () => {
       };
 
       const response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(userData)
         .expect(201);
 
@@ -477,12 +462,12 @@ describe("User Controller - All User Features", () => {
       };
 
       const response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .send(userData)
         .expect(500); // 500 = Internal Server Error
 
       expect(response.body.message).toBeTruthy();
-      expect(response.body).not.toHaveProperty("stack"); // Don't leak error details
+      expect(response.body.stack).toBeNull(); // Stack should be null in test environment
       
       // Clean up mock
       User.create.mockRestore();
@@ -490,7 +475,7 @@ describe("User Controller - All User Features", () => {
 
     test("💥 Should handle malformed JSON", async () => {
       const response = await request(app)
-        .post("/api/users/register")
+        .post("/api/users")
         .set("Content-Type", "application/json")
         .send("this is not valid JSON{") // Bad JSON
         .expect(400);
@@ -514,7 +499,7 @@ describe("User Controller - All User Features", () => {
       // Should NOT include:
       expect(response.body.message).not.toContain("user not found");
       expect(response.body.message).not.toContain("password incorrect");
-      expect(response.body).not.toHaveProperty("stack");
+      expect(response.body.stack).toBeNull(); // Stack should be null in test environment
       expect(response.body).not.toHaveProperty("sql");
     });
   });
