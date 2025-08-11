@@ -81,6 +81,14 @@ app.use("/api/goals", goalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
+// JSON parsing error handler
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    res.status(400).json({ message: err.message });
+  } else {
+    next(err);
+  }
+});
 
 app.use(notFound);
 app.use(errorHandler);
