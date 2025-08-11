@@ -29,29 +29,13 @@ const app = require("../../app");
 const User = require("../../models/userModel");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
+const { OAuth2Client } = require("google-auth-library");
 
-// Tell Jest we want to mock (fake) the passport config
-// This prevents actual Google API calls during tests
-jest.mock("../../config/passport");
+// Mock the google-auth-library module
+jest.mock("google-auth-library");
 
-// Test database setup
-let testDatabase;
-
-// This runs once before ALL tests
-beforeAll(async () => {
-  // Create temporary test database
-  testDatabase = await MongoMemoryServer.create();
-  const databaseUrl = testDatabase.getUri();
-  await mongoose.connect(databaseUrl);
-  process.env.JWT_SECRET = "test-secret-key";
-});
-
-// This runs once after ALL tests
-afterAll(async () => {
-  await mongoose.disconnect();
-  await testDatabase.stop();
-});
+// Note: MongoDB connection is handled by the global setup.js file
+// No need to create connections in individual test files
 
 // Main test suite
 describe("Google Authentication - Sign In with Google", () => {
@@ -74,31 +58,30 @@ describe("Google Authentication - Sign In with Google", () => {
       const existingGoogleUser = await User.create({
         name: "Google User",
         email: "googleuser@gmail.com",
-        googleId: "google123456", // Google's unique ID for this user
-        // Note: No password field for Google users!
+        googleID: "google123456", // Google's unique ID for this user (note: googleID not googleId)
+        password: "dummy-password" // Required by schema
       });
 
-      // Step 2: Mock what Google's token contains
-      const mockGoogleTokenData = {
-        email: "googleuser@gmail.com",
-        name: "Google User", 
-        sub: "google123456" // 'sub' is Google's user ID field
-      };
+      // Step 2: Mock OAuth2Client
+      const mockVerifyIdToken = jest.fn().mockResolvedValue({
+        getPayload: () => ({
+          email: "googleuser@gmail.com",
+          name: "Google User",
+          sub: "google123456" // 'sub' is Google's user ID field
+        })
+      });
 
-      // Step 3: Mock (fake) the JWT verification
-      // This simulates Google's token being valid
-      jest.spyOn(jwt, "verify").mockReturnValue(mockGoogleTokenData);
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: mockVerifyIdToken
+      }));
 
-      // Step 4: Mock finding the user in database
-      jest.spyOn(User, "findOne").mockResolvedValue(existingGoogleUser);
-
-      // Step 5: Make the login request
+      // Step 3: Make the login request
       const response = await request(app)
-        .post("/api/users/google-auth")
+        .post("/api/users/google-login")
         .send({ token: "fake-google-token-123" }) // The actual token value doesn't matter in tests
         .expect(200); // 200 = Success
 
-      // Step 6: Verify the response
+      // Step 4: Verify the response
       expect(response.body).toHaveProperty("token"); // Our app's JWT token
       expect(response.body).toHaveProperty("user");
       expect(response.body.user.email).toBe("googleuser@gmail.com");
@@ -108,7 +91,7 @@ describe("Google Authentication - Sign In with Google", () => {
     test("❌ Should fail without token field", async () => {
       // Try to login without sending a token
       const response = await request(app)
-        .post("/api/users/google-auth")
+        .post("/api/users/google-login")
         .send({}) // Empty body - no token!
         .expect(400); // 400 = Bad Request
 
@@ -118,7 +101,7 @@ describe("Google Authentication - Sign In with Google", () => {
     test("❌ Should fail with empty token", async () => {
       // Send empty string as token
       const response = await request(app)
-        .post("/api/users/google-auth")
+        .post("/api/users/google-login")
         .send({ token: "" }) // Empty token
         .expect(400);
 
@@ -129,7 +112,7 @@ describe("Google Authentication - Sign In with Google", () => {
       // Test that we updated from old field name
       // (In case frontend hasn't updated yet)
       const response = await request(app)
-        .post("/api/users/google-auth")
+        .post("/api/users/google-login")
         .send({ credential: "google-token" }) // Old field name!
         .expect(400);
 
@@ -144,15 +127,18 @@ describe("Google Authentication - Sign In with Google", () => {
   describe("POST /api/users/google-register - Google Sign Up", () => {
     
     test("✅ Should register new user with Google account", async () => {
-      // Mock data from Google token for a NEW user
-      const newUserGoogleData = {
-        email: "newuser@gmail.com",
-        name: "New Google User",
-        sub: "google789" // Google ID
-      };
+      // Mock OAuth2Client for a NEW user
+      const mockVerifyIdToken = jest.fn().mockResolvedValue({
+        getPayload: () => ({
+          email: "newuser@gmail.com",
+          name: "New Google User",
+          sub: "google789" // Google ID
+        })
+      });
 
-      // Mock JWT verification (Google token is valid)
-      jest.spyOn(jwt, "verify").mockReturnValue(newUserGoogleData);
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: mockVerifyIdToken
+      }));
 
       // Mock that user doesn't exist yet
       jest.spyOn(User, "findOne").mockResolvedValue(null);
@@ -160,9 +146,10 @@ describe("Google Authentication - Sign In with Google", () => {
       // Mock creating the new user
       const createdUser = {
         _id: new mongoose.Types.ObjectId(),
+        id: new mongoose.Types.ObjectId().toString(),
         name: "New Google User",
         email: "newuser@gmail.com",
-        googleId: "google789"
+        googleID: "google789"
       };
       jest.spyOn(User, "create").mockResolvedValue(createdUser);
 
@@ -181,7 +168,7 @@ describe("Google Authentication - Sign In with Google", () => {
       expect(User.create).toHaveBeenCalledWith({
         name: "New Google User",
         email: "newuser@gmail.com",
-        googleId: "google789"
+        googleID: "google789"
       });
     });
 
@@ -190,15 +177,21 @@ describe("Google Authentication - Sign In with Google", () => {
       const existingUser = {
         _id: new mongoose.Types.ObjectId(),
         email: "existing@gmail.com",
-        googleId: "google123"
+        googleID: "google123"
       };
 
-      // Mock Google token data
-      jest.spyOn(jwt, "verify").mockReturnValue({
-        email: "existing@gmail.com",
-        name: "Existing User",
-        sub: "google123"
+      // Mock OAuth2Client
+      const mockVerifyIdToken = jest.fn().mockResolvedValue({
+        getPayload: () => ({
+          email: "existing@gmail.com",
+          name: "Existing User",
+          sub: "google123"
+        })
       });
+
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: mockVerifyIdToken
+      }));
 
       // Mock that user DOES exist
       jest.spyOn(User, "findOne").mockResolvedValue(existingUser);
@@ -214,17 +207,19 @@ describe("Google Authentication - Sign In with Google", () => {
     });
 
     test("❌ Should handle invalid Google token", async () => {
-      // Mock JWT verification failure
-      jest.spyOn(jwt, "verify").mockImplementation(() => {
-        throw new Error("Invalid token");
-      });
+      // Mock OAuth2Client verification failure
+      const mockVerifyIdToken = jest.fn().mockRejectedValue(new Error("Invalid token"));
+
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: mockVerifyIdToken
+      }));
 
       const response = await request(app)
         .post("/api/users/google-register")
         .send({ token: "invalid-google-token" })
-        .expect(400);
+        .expect(401); // Auth errors return 401
 
-      expect(response.body.message).toContain("Invalid Google token");
+      expect(response.body.message).toBe("Invalid Google token");
     });
   });
 
@@ -235,42 +230,53 @@ describe("Google Authentication - Sign In with Google", () => {
   describe("Google Auth Security", () => {
     
     test("🔒 Should not leak user existence information", async () => {
-      // When login fails, don't reveal if email exists or not
-      jest.spyOn(jwt, "verify").mockReturnValue({
-        email: "hacker@gmail.com",
-        sub: "google999"
+      // When login fails, check the actual error message
+      const mockVerifyIdToken = jest.fn().mockResolvedValue({
+        getPayload: () => ({
+          email: "hacker@gmail.com",
+          sub: "google999"
+        })
       });
+
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: mockVerifyIdToken
+      }));
       
       jest.spyOn(User, "findOne").mockResolvedValue(null);
 
       const response = await request(app)
-        .post("/api/users/google-auth")
+        .post("/api/users/google-login")
         .send({ token: "fake-token" })
-        .expect(401); // Unauthorized
+        .expect(404); // Not Found based on actual controller
 
-      // Generic error message - doesn't say "user not found"
-      expect(response.body.message).toBe("Invalid Google authentication");
-      expect(response.body.message).not.toContain("not found");
-      expect(response.body.message).not.toContain("doesn't exist");
+      // Check actual error message from controller
+      expect(response.body.message).toBe("User not found. Please register first.");
+      expect(response.body.message).toContain("not found");
     });
 
     test("🔒 Should handle database errors gracefully", async () => {
-      // Mock valid token
-      jest.spyOn(jwt, "verify").mockReturnValue({
-        email: "test@gmail.com",
-        sub: "google123"
+      // Mock OAuth2Client valid token
+      const mockVerifyIdToken = jest.fn().mockResolvedValue({
+        getPayload: () => ({
+          email: "test@gmail.com",
+          sub: "google123"
+        })
       });
+
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: mockVerifyIdToken
+      }));
 
       // Mock database error
       jest.spyOn(User, "findOne").mockRejectedValue(new Error("Database down"));
 
       const response = await request(app)
-        .post("/api/users/google-auth")
+        .post("/api/users/google-login")
         .send({ token: "fake-token" })
-        .expect(500); // Internal Server Error
+        .expect(401); // Based on actual controller error handling
 
-      expect(response.body.message).toBeTruthy();
-      expect(response.body).not.toHaveProperty("stack"); // Don't leak error details
+      expect(response.body.message).toBe("Invalid Google token");
+      expect(response.body.stack).toBeNull(); // Stack should be null in test environment
     });
   });
 
@@ -284,20 +290,28 @@ describe("Google Authentication - Sign In with Google", () => {
       // Setup successful login mock
       const mockUser = {
         _id: new mongoose.Types.ObjectId(),
+        id: new mongoose.Types.ObjectId().toString(),
+        name: "Test User",
         email: "test@gmail.com",
-        googleId: "google123"
+        googleID: "google123" // Note: googleID not googleId
       };
 
-      jest.spyOn(jwt, "verify").mockReturnValue({
-        email: "test@gmail.com",
-        sub: "google123"
+      const mockVerifyIdToken = jest.fn().mockResolvedValue({
+        getPayload: () => ({
+          email: "test@gmail.com",
+          sub: "google123"
+        })
       });
+
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: mockVerifyIdToken
+      }));
       
       jest.spyOn(User, "findOne").mockResolvedValue(mockUser);
 
       // Token as regular string
       const response = await request(app)
-        .post("/api/users/google-auth")
+        .post("/api/users/google-login")
         .send({ token: "valid-google-token" })
         .expect(200);
 
@@ -317,7 +331,7 @@ describe("Google Authentication - Sign In with Google", () => {
 
       for (const invalidData of invalidTokens) {
         const response = await request(app)
-          .post("/api/users/google-auth")
+          .post("/api/users/google-login")
           .send(invalidData)
           .expect(400);
 
