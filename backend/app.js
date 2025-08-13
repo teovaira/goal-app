@@ -24,9 +24,11 @@ const corsOptions = {
     const allowedOrigins = process.env.NODE_ENV === 'production'
       ? [process.env.FRONTEND_URL || 'https://your-app.com']
       : [
-          'http://localhost:5173',
-          'http://localhost:3000',
-          'http://localhost:5000'
+          'http://localhost:5173',  // Default Vite dev port
+          'http://localhost:5174',  // Alternative Vite dev port
+          'http://localhost:4173',  // Vite preview port
+          'http://localhost:3000',  // Alternative dev port
+          'http://localhost:5000'   // Backend port (for testing)
         ];
     
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -67,7 +69,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.get("/", (req, res) => {
-  res.send("Welcome to GoalApp API");
+  res.send("Welcome to Goal Tracker API");
 });
 
 
@@ -81,7 +83,6 @@ app.use("/api/goals", goalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// JSON parsing error handler
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     res.status(400).json({ message: err.message });
