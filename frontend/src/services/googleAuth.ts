@@ -39,23 +39,20 @@ export const handleGoogleSuccess = async (
   try {
     const authData = await authenticateWithGoogle(credentialResponse, isRegistration);
     
-    // Store token and user data
     const userData = {
       _id: authData._id,
       name: authData.name,
       email: authData.email,
     };
     authStorage.setAuthData(authData.token, userData);
-    
-    // Show success notification if provided
+
     if (showNotification) {
       const message = isRegistration
         ? "Registration successful! Welcome to Goal Tracker."
         : "Welcome back! Login successful.";
       showNotification(message);
     }
-    
-    // Use the existing login function from AuthContext
+
     login(navigate);
   } catch (error) {
     if (error instanceof AxiosError) {
