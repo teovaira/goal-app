@@ -173,7 +173,6 @@ const googleLogin = asyncHandler(async (req, res) => {
     });
     
   } catch (error) {
-    // If it's our custom "User not found" error, preserve the 404 status
     if (error.message === "User not found. Please register first." && res.statusCode === 404) {
       throw error;
     }
@@ -241,7 +240,6 @@ const googleRegister = asyncHandler(async (req, res) => {
     }
     
   } catch (error) {
-    // If it's our custom error, preserve the status code
     if ((error.message === "User already exists" && res.statusCode === 400) ||
         (error.message === "Failed to create user" && res.statusCode === 400)) {
       throw error;
