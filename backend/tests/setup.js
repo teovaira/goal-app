@@ -8,7 +8,6 @@ let mongo;
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   const uri = mongo.getUri();
-  // Remove deprecated options - they're no longer needed in MongoDB driver v4+
   await mongoose.connect(uri);
 });
 
