@@ -108,7 +108,7 @@ npm run test:watch
 
 1. **Register**: Create a new account using the registration form
 2. **Login**: Sign in with your credentials or use Google OAuth
-3. **Create Goals**: Add new goals with titles and descriptions
+3. **Create Goals**: Add new goals with descriptive text
 4. **Completion Status Tracking**: Monitor and update your goals' statuses
 5. **Manage Goals**: Edit or delete goals as needed
 
@@ -134,7 +134,7 @@ goal-app/
 
 ## Technologies Used
 
-- **Frontend**: React, TypeScript, Vite, Tailwind CSS
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS, Axios
 - **Backend**: Node.js, Express, MongoDB, Mongoose
 - **Authentication**: JWT, Google OAuth
 - **Testing**: Jest
