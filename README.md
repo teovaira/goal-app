@@ -1,10 +1,10 @@
-# Goal App
+# Goal Tracker
 
 A goal tracking app with completion status and filtering
 
 ## Description
 
-Goal App is a full-stack web application that helps users create, track, and manage their personal goals. Built with React and Node.js, it features user authentication, goal management, and completion status tracking and filtering.
+Goal Tracker is a full-stack web application that helps users create, track, and manage their personal goals. Built with React and Node.js, it features user authentication, goal management, and completion status tracking and filtering.
 
 ## Prerequisites
 
