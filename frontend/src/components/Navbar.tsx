@@ -18,7 +18,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="text-white font-bold text-xl">
-              Goal App
+              Goal Tracker
             </Link>
             <div className="hidden md:block ml-10">
               <div className="flex items-baseline space-x-4">
