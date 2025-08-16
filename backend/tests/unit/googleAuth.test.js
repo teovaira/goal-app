@@ -34,8 +34,6 @@ const { OAuth2Client } = require("google-auth-library");
 // Mock the google-auth-library module
 jest.mock("google-auth-library");
 
-// Note: MongoDB connection is handled by the global setup.js file
-// No need to create connections in individual test files
 
 // Main test suite
 describe("Google Authentication - Sign In with Google", () => {

@@ -2,7 +2,7 @@
  * 
  * 
  * What is this file?
- * This file tests all the user-related features of our app like:
+ * This file tests all the user-related features of the app like:
  * - Creating new accounts (registration)
  * - Logging in
  * - Viewing user profiles
@@ -28,8 +28,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// Note: MongoDB connection is handled by the global setup.js file
-// No need to create connections in individual test files
 
 // Main test suite
 describe("User Controller - All User Features", () => {
@@ -46,11 +44,10 @@ describe("User Controller - All User Features", () => {
   describe("POST /api/users/register - Creating New Accounts", () => {
     
     // Helper function to create valid user data
-    // This keeps our tests DRY (Don't Repeat Yourself)
     const createValidUserData = () => ({
       name: "Test User",
       email: "test@example.com", 
-      password: "SecurePass123!@#"  // Strong password with numbers & symbols
+      password: "SecurePass123!@#"  
     });
 
     test("✅ Should register a new user with valid data", async () => {
@@ -62,7 +59,7 @@ describe("User Controller - All User Features", () => {
         .expect(201); // 201 = Created
 
       // Check response has what we need
-      expect(response.body).toHaveProperty("token");     // Login token
+      expect(response.body).toHaveProperty("token");     // JWT token
       expect(response.body.user).toHaveProperty("_id");  // User ID
       expect(response.body.user.email).toBe(userData.email);
       expect(response.body.user.name).toBe(userData.name);

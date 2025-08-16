@@ -10,13 +10,7 @@
  * - POST   /api/goals       → Create a new goal
  * - PUT    /api/goals/:id   → Update a goal (text or completion status)
  * - DELETE /api/goals/:id   → Delete a goal
- * 
- * Key Concepts for Juniors:
- * - API Endpoint: A URL that our app responds to (like /api/goals)
- * - HTTP Methods: GET (read), POST (create), PUT (update), DELETE (remove)
- * - Status Codes: 200 (success), 201 (created), 400 (bad request), 401 (unauthorized), 404 (not found)
- * - Authorization: Making sure users can only see/edit their own goals
- * 
+ *
  * Testing Strategy:
  * We test each endpoint with:
  * 1. ✅ Valid inputs (should work)
@@ -30,9 +24,6 @@ const Goal = require("../../models/goalModel");
 const User = require("../../models/userModel");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-
-// Note: MongoDB connection is handled by the global setup.js file
-// No need to create connections in individual test files
 
 // Main test suite
 describe("Goal Controller - Complete API Tests", () => {
