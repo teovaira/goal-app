@@ -1,5 +1,5 @@
 /**
- * Google Authentication Tests - Junior Friendly Version
+ * Google Authentication Tests 
  * 
  * What is this file?
  * This file tests our Google Sign-In feature, which allows users to:
@@ -342,7 +342,7 @@ describe("Google Authentication - Sign In with Google", () => {
 });
 
 /**
- * Summary for Junior Developers:
+ * 
  * 
  * This test file covers Google Sign-In functionality:
  * 1. Login - Existing users signing in with Google

@@ -322,7 +322,7 @@ describe("Authentication Middleware - Junior Friendly Tests", () => {
 });
 
 /**
- * Summary for Junior Developers:
+ * 
  * 
  * This test file ensures our authentication middleware works correctly by testing:
  * 1. ✅ Happy path - valid tokens work

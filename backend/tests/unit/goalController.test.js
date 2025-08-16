@@ -1,5 +1,5 @@
 /**
- * Goal Controller Tests - Junior Friendly Version
+ * Goal Controller Tests 
  * 
  * What is this file?
  * This file tests all the API endpoints (URLs) related to goals in our app.
@@ -483,7 +483,7 @@ describe("Goal Controller - Complete API Tests", () => {
 });
 
 /**
- * Summary for Junior Developers:
+ * 
  * 
  * This test file covers all the ways users interact with goals:
  * 1. Creating goals (POST)

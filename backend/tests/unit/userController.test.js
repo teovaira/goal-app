@@ -1,5 +1,5 @@
 /**
- * User Controller Tests - Junior Friendly Version
+ * 
  * 
  * What is this file?
  * This file tests all the user-related features of our app like:
@@ -506,7 +506,7 @@ describe("User Controller - All User Features", () => {
 });
 
 /**
- * Summary for Junior Developers:
+ * 
  * 
  * This test file covers all user-related features:
  * 1. Registration - Creating new accounts
