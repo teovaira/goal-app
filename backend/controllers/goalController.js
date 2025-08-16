@@ -103,7 +103,7 @@ const createGoal = asyncHandler(async (req,res) => {
 
       const goal = await Goal.findById(req.params.id);
       if (!goal) {
-        logger.warn(`Goal with id:b${req.params.id} not found for deletion.`);
+        logger.warn(`Goal with id:${req.params.id} not found for deletion.`);
         res.status(404);
         throw new Error("Goal not found.");
       };
@@ -116,7 +116,6 @@ const createGoal = asyncHandler(async (req,res) => {
         throw new Error("Not authorized to delete this goal");
       }
 
-      // Store the goal data before deletion
       const goalData = {
         _id: goal._id.toString(),
         text: goal.text,
