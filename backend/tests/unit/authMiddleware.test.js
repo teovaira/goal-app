@@ -28,8 +28,7 @@ const User = require("../../models/userModel");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
-// Note: MongoDB connection is handled by the global setup.js file
-// No need to create connections in individual test files
+
 let testApp; // Our test Express app
 
 // This runs once before ALL tests
@@ -60,7 +59,7 @@ beforeAll(async () => {
 });
 
 // Main test group
-describe("Authentication Middleware - Junior Friendly Tests", () => {
+describe("Authentication Middleware", () => {
   let validToken; // Will store a valid token for testing
   let testUserId; // Will store the test user's ID
 
