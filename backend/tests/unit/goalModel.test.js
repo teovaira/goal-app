@@ -18,8 +18,6 @@
 const Goal = require("../../models/goalModel");
 const mongoose = require("mongoose");
 
-// Note: MongoDB connection is handled by the global setup.js file
-// No need to create connections in individual test files
 
 describe("Goal Model Database Tests", () => {
   // Before each test, clear all goals to start fresh
