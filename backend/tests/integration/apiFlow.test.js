@@ -4,8 +4,6 @@ const User = require("../../models/userModel");
 const Goal = require("../../models/goalModel");
 const mongoose = require("mongoose");
 
-// Note: MongoDB connection is handled by the global setup.js file
-// No need to create connections in individual test files
 
 describe("API Integration Tests", () => {
   beforeEach(async () => {
