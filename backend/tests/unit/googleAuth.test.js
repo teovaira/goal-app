@@ -49,7 +49,7 @@ describe("Google Authentication - Sign In with Google", () => {
    * TEST GROUP 1: Google Login (Existing Users)
    * These tests check if existing users can log in with Google
    */
-  describe("POST /api/users/google-auth - Google Login", () => {
+  describe("POST /api/users/google-login - Google Login", () => {
     
     test("✅ Should login existing user with valid Google token", async () => {
       // Step 1: Create a user who previously signed up with Google
